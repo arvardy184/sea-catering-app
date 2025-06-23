@@ -14,12 +14,15 @@ export const Hero: React.FC = () => {
 
   if (!mounted) {
     return (
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary-orange to-primary-green">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Gradient Background */}
+        <div className="absolute inset-0 gradient-hero"></div>
+        
         {/* Static content for SSR */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="space-y-8">
             <div className="mb-8">
-              <h1 className="text-6xl md:text-8xl font-bold text-white mb-4 tracking-tight font-inter">
+              <h1 className="text-6xl md:text-8xl font-bold text-white mb-4 tracking-tight">
                 SEA Catering
               </h1>
               <div className="flex items-center justify-center gap-2 text-white/90 text-xl">
@@ -44,7 +47,7 @@ export const Hero: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button 
                 size="lg" 
-                className="bg-white text-primary-orange hover:bg-gray-100 min-w-[200px]"
+                className="bg-white text-orange-600 hover:bg-gray-100 min-w-[200px]"
               >
                 Mulai Berlangganan
                 <ArrowRight className="ml-2 w-5 h-5" />
@@ -53,7 +56,7 @@ export const Hero: React.FC = () => {
               <Button 
                 variant="outline" 
                 size="lg"
-                className="border-white text-white hover:bg-white hover:text-primary-orange min-w-[200px]"
+                className="border-white text-white hover:bg-white hover:text-orange-600 min-w-[200px]"
               >
                 <Phone className="mr-2 w-5 h-5" />
                 Hubungi Kami
@@ -83,7 +86,7 @@ export const Hero: React.FC = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Gradient Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary-orange to-primary-green"></div>
+      <div className="absolute inset-0 gradient-hero"></div>
       
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
@@ -106,7 +109,7 @@ export const Hero: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="mb-8"
           >
-            <h1 className="text-6xl md:text-8xl font-bold text-white mb-4 tracking-tight font-inter">
+            <h1 className="text-6xl md:text-8xl font-bold text-white mb-4 tracking-tight">
               SEA Catering
             </h1>
             <div className="flex items-center justify-center gap-2 text-white/90 text-xl">
@@ -149,7 +152,7 @@ export const Hero: React.FC = () => {
           >
             <Button 
               size="lg" 
-              className="bg-white text-primary-orange hover:bg-gray-100 min-w-[200px]"
+              className="bg-white text-orange-600 hover:bg-gray-100 min-w-[200px]"
             >
               Mulai Berlangganan
               <ArrowRight className="ml-2 w-5 h-5" />
@@ -158,7 +161,7 @@ export const Hero: React.FC = () => {
             <Button 
               variant="outline" 
               size="lg"
-              className="border-white text-white hover:bg-white hover:text-primary-orange min-w-[200px]"
+              className="border-white text-white hover:bg-white hover:text-orange-600 min-w-[200px]"
             >
               <Phone className="mr-2 w-5 h-5" />
               Hubungi Kami
