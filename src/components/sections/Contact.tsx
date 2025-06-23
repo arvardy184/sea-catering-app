@@ -11,13 +11,10 @@ import {
   Send,
   MessageCircle,
   Star,
-  Sparkles,
-  Zap,
-  Globe,
-  Users,
-  Heart,
-  ArrowRight,
-  CheckCircle
+  CheckCircle,
+  Instagram,
+  Facebook,
+  Twitter
 } from 'lucide-react';
 
 interface ContactForm {
@@ -28,62 +25,37 @@ interface ContactForm {
   subject: string;
 }
 
-const contactMethods = [
+const contactInfo = [
   {
     icon: Phone,
-    title: "Phone Support",
-    info: "+62 811-8888-SEA (732)",
-    description: "24/7 Customer Service",
-    color: "text-green-500",
-    bgGradient: "from-green-500/20 to-emerald-500/20",
-    borderColor: "border-green-500/30",
-    emoji: "📞"
+    title: "Telepon",
+    info: "+62 811-8888-SEA",
+    description: "Senin - Minggu, 06:00 - 22:00",
+    color: "text-green-600",
+    bgColor: "bg-green-50"
   },
   {
     icon: Mail,
-    title: "Email Support", 
+    title: "Email", 
     info: "hello@seacatering.id",
-    description: "Response dalam 2 jam",
-    color: "text-blue-500",
-    bgGradient: "from-blue-500/20 to-cyan-500/20",
-    borderColor: "border-blue-500/30",
-    emoji: "✉️"
+    description: "Respon dalam 2 jam",
+    color: "text-blue-600",
+    bgColor: "bg-blue-50"
   },
   {
     icon: MapPin,
-    title: "Head Office",
-    info: "Jakarta Selatan, Indonesia",
-    description: "25+ kota dilayani",
-    color: "text-purple-500",
-    bgGradient: "from-purple-500/20 to-pink-500/20",
-    borderColor: "border-purple-500/30",
-    emoji: "🏢"
-  },
-  {
-    icon: Clock,
-    title: "Operating Hours",
-    info: "24/7 Non-Stop",
-    description: "Delivery & Customer Service",
-    color: "text-orange-500",
-    bgGradient: "from-orange-500/20 to-red-500/20",
-    borderColor: "border-orange-500/30",
-    emoji: "⏰"
+    title: "Alamat",
+    info: "Jakarta Selatan",
+    description: "Melayani 25+ kota di Indonesia",
+    color: "text-orange-600",
+    bgColor: "bg-orange-50"
   }
 ];
 
-const faqs = [
-  {
-    question: "Bagaimana cara kerja subscription?",
-    answer: "Pilih paket meal, tentukan jadwal pengiriman, dan sistem AI kami akan otomatis mengatur delivery sesuai preferensi Anda."
-  },
-  {
-    question: "Apakah ada jaminan kualitas?",
-    answer: "100%! Semua makanan menggunakan blockchain traceability dan jaminan uang kembali jika tidak puas."
-  },
-  {
-    question: "Berapa lama pengiriman?",
-    answer: "Rata-rata 30 menit di Jakarta, 45-60 menit di kota lain dengan real-time tracking."
-  }
+const socialMedia = [
+  { icon: Instagram, name: "@seacatering.id", link: "#" },
+  { icon: Facebook, name: "SEA Catering", link: "#" },
+  { icon: Twitter, name: "@seacatering", link: "#" }
 ];
 
 export const Contact: React.FC = () => {
@@ -128,446 +100,301 @@ export const Contact: React.FC = () => {
     }, 3000);
   };
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { y: 50, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.8,
-        ease: "easeOut"
-      }
-    }
-  };
-
   return (
-    <section className="relative py-24 overflow-hidden">
-      {/* Dynamic Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50"></div>
-      
-      {/* Floating Background Elements */}
-      <div className="absolute inset-0 opacity-40">
-        <motion.div 
-          animate={{ 
-            y: [-30, 30, -30],
-            rotate: [0, 180, 360],
-            scale: [1, 1.2, 1]
-          }}
-          transition={{ 
-            duration: 25, 
-            repeat: Infinity, 
-            ease: "linear" 
-          }}
-          className="absolute top-10 right-10 w-40 h-40 bg-gradient-to-r from-purple-400/30 to-pink-400/30 rounded-full blur-xl"
-        />
-        <motion.div 
-          animate={{ 
-            y: [30, -30, 30],
-            rotate: [360, 180, 0],
-            scale: [1.2, 1, 1.2]
-          }}
-          transition={{ 
-            duration: 20, 
-            repeat: Infinity, 
-            ease: "linear" 
-          }}
-          className="absolute bottom-10 left-10 w-56 h-56 bg-gradient-to-r from-blue-400/30 to-cyan-400/30 rounded-full blur-xl"
-        />
-        <motion.div 
-          animate={{ 
-            scale: [1, 1.5, 1],
-            opacity: [0.3, 0.1, 0.3],
-            rotate: [0, 360, 0]
-          }}
-          transition={{ 
-            duration: 30, 
-            repeat: Infinity, 
-            ease: "easeInOut" 
-          }}
-          className="absolute top-1/3 left-1/3 w-96 h-96 bg-gradient-to-r from-orange-400/20 to-red-400/20 rounded-full blur-3xl"
-        />
-      </div>
+    <section className="relative py-20 overflow-hidden bg-white">
+      {/* Subtle Pattern */}
+      <div className="absolute inset-0 opacity-[0.02]" style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+      }}></div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
+          transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-center mb-20"
+          className="text-center mb-16"
         >
-          {/* Premium Badge */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-white/60 backdrop-blur-md rounded-full border border-white/40 shadow-lg mb-8"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 rounded-full mb-6"
           >
-            <MessageCircle className="w-5 h-5 text-purple-500" />
-            <span className="text-slate-700 font-semibold">24/7 Premium Support</span>
+            <MessageCircle className="w-4 h-4 text-green-600" />
+            <span className="text-sm font-medium text-green-800">Hubungi Kami</span>
           </motion.div>
 
           <motion.h2
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
             viewport={{ once: true }}
-            className="text-5xl md:text-7xl font-black text-slate-800 mb-6 leading-tight"
+            className="text-4xl md:text-5xl font-bold text-gray-900 mb-6"
           >
-            Ready to{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500">
-              Get Started?
-            </span>
+            Ada Pertanyaan?
+            <span className="text-orange-500 block">Kami Siap Membantu</span>
           </motion.h2>
 
           <motion.p
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
             viewport={{ once: true }}
-            className="text-xl text-slate-600 max-w-4xl mx-auto leading-relaxed"
+            className="text-xl text-gray-600 max-w-3xl mx-auto"
           >
-            Tim customer success kami siap membantu Anda 24/7. Dari konsultasi nutrisi hingga technical support, 
-            kami berkomitmen memberikan <span className="font-semibold text-purple-600">pengalaman terbaik</span> untuk setiap pelanggan.
+            Tim customer service kami siap membantu Anda 7 hari seminggu. 
+            Jangan ragu untuk menghubungi kami kapan saja.
           </motion.p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
           {/* Contact Form */}
           <motion.div
-            initial={{ opacity: 0, x: -50 }}
+            initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="relative"
           >
-            <div className="relative bg-white/60 backdrop-blur-xl rounded-3xl border border-white/40 shadow-2xl p-8 overflow-hidden">
-              {/* Glow Effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 opacity-50"></div>
+            <div className="bg-gray-50 rounded-3xl p-8">
+              <h3 className="text-2xl font-bold text-gray-900 mb-6">Kirim Pesan</h3>
               
-              {/* Floating Sparkles */}
-              <motion.div
-                animate={{ 
-                  y: [-10, 10, -10],
-                  rotate: [0, 180, 360]
-                }}
-                transition={{ 
-                  duration: 6, 
-                  repeat: Infinity, 
-                  ease: "easeInOut"
-                }}
-                className="absolute top-6 right-6 opacity-30"
-              >
-                <Sparkles className="w-8 h-8 text-purple-500" />
-              </motion.div>
-
-              <div className="relative z-10">
-                <div className="flex items-center gap-3 mb-8">
-                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
-                    <Send className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-bold text-slate-800">Send Message</h3>
-                    <p className="text-slate-600">We'll respond within 2 hours</p>
-                  </div>
-                </div>
-
-                {!isSubmitted ? (
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <motion.div
-                        whileFocus={{ scale: 1.02 }}
-                        className="group"
-                      >
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">
-                          Name *
-                        </label>
-                        <input
-                          type="text"
-                          name="name"
-                          value={formData.name}
-                          onChange={handleInputChange}
-                          required
-                          className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 group-hover:bg-white"
-                          placeholder="Your full name"
-                        />
-                      </motion.div>
-
-                      <motion.div
-                        whileFocus={{ scale: 1.02 }}
-                        className="group"
-                      >
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">
-                          Phone
-                        </label>
-                        <input
-                          type="tel"
-                          name="phone"
-                          value={formData.phone}
-                          onChange={handleInputChange}
-                          className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 group-hover:bg-white"
-                          placeholder="+62 812-3456-7890"
-                        />
-                      </motion.div>
-                    </div>
-
-                    <motion.div
-                      whileFocus={{ scale: 1.02 }}
-                      className="group"
-                    >
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">
-                        Email *
+              {!isSubmitted ? (
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Nama Lengkap *
                       </label>
                       <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
+                        type="text"
+                        name="name"
+                        value={formData.name}
                         onChange={handleInputChange}
                         required
-                        className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 group-hover:bg-white"
-                        placeholder="your.email@example.com"
+                        className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                        placeholder="John Doe"
                       />
-                    </motion.div>
+                    </div>
 
-                    <motion.div
-                      whileFocus={{ scale: 1.02 }}
-                      className="group"
-                    >
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">
-                        Subject
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        No. Telepon
                       </label>
-                      <select
-                        name="subject"
-                        value={formData.subject}
+                      <input
+                        type="tel"
+                        name="phone"
+                        value={formData.phone}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 group-hover:bg-white"
-                      >
-                        <option value="">Select a topic...</option>
-                        <option value="subscription">Subscription Plans</option>
-                        <option value="nutrition">Nutrition Consultation</option>
-                        <option value="delivery">Delivery Issues</option>
-                        <option value="partnership">Business Partnership</option>
-                        <option value="technical">Technical Support</option>
-                        <option value="other">Other Questions</option>
-                      </select>
-                    </motion.div>
-
-                    <motion.div
-                      whileFocus={{ scale: 1.02 }}
-                      className="group"
-                    >
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">
-                        Message *
-                      </label>
-                      <textarea
-                        name="message"
-                        value={formData.message}
-                        onChange={handleInputChange}
-                        required
-                        rows={4}
-                        className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 group-hover:bg-white resize-none"
-                        placeholder="Tell us how we can help you..."
+                        className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                        placeholder="+62 812-3456-7890"
                       />
-                    </motion.div>
+                    </div>
+                  </div>
 
-                    <motion.button
-                      type="submit"
-                      disabled={isSubmitting}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-300 shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Email *
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                      placeholder="john@example.com"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Topik
+                    </label>
+                    <select
+                      name="subject"
+                      value={formData.subject}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                     >
-                      {isSubmitting ? (
-                        <>
-                          <motion.div
-                            animate={{ rotate: 360 }}
-                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                            className="w-6 h-6 border-2 border-white border-t-transparent rounded-full"
-                          />
-                          Sending...
-                        </>
-                      ) : (
-                        <>
-                          <Send className="w-6 h-6" />
-                          Send Message
-                        </>
-                      )}
-                    </motion.button>
-                  </form>
-                ) : (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="text-center py-8"
+                      <option value="">Pilih topik...</option>
+                      <option value="order">Pemesanan</option>
+                      <option value="menu">Pertanyaan Menu</option>
+                      <option value="delivery">Pengiriman</option>
+                      <option value="partnership">Kerjasama Bisnis</option>
+                      <option value="complaint">Keluhan</option>
+                      <option value="other">Lainnya</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Pesan *
+                    </label>
+                    <textarea
+                      name="message"
+                      value={formData.message}
+                      onChange={handleInputChange}
+                      required
+                      rows={4}
+                      className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all resize-none"
+                      placeholder="Tuliskan pesan Anda di sini..."
+                    />
+                  </div>
+
+                  <motion.button
+                    type="submit"
+                    disabled={isSubmitting}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="w-full bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
-                    <motion.div
-                      animate={{ scale: [1, 1.2, 1] }}
-                      transition={{ duration: 1, repeat: 2 }}
-                      className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6"
-                    >
-                      <CheckCircle className="w-10 h-10 text-white" />
-                    </motion.div>
-                    <h4 className="text-2xl font-bold text-slate-800 mb-4">Message Sent! 🎉</h4>
-                    <p className="text-slate-600">
-                      Terima kasih! Tim kami akan segera menghubungi Anda dalam 2 jam.
-                    </p>
+                    {isSubmitting ? (
+                      <>
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                          className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                        />
+                        Mengirim...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-5 h-5" />
+                        Kirim Pesan
+                      </>
+                    )}
+                  </motion.button>
+                </form>
+              ) : (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="text-center py-12"
+                >
+                  <motion.div
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 0.6 }}
+                    className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6"
+                  >
+                    <CheckCircle className="w-10 h-10 text-white" />
                   </motion.div>
-                )}
-              </div>
+                  <h4 className="text-2xl font-bold text-gray-900 mb-4">Pesan Terkirim!</h4>
+                  <p className="text-gray-600">
+                    Terima kasih telah menghubungi kami. Tim kami akan segera merespon dalam 2 jam kerja.
+                  </p>
+                </motion.div>
+              )}
             </div>
           </motion.div>
 
-          {/* Contact Methods & FAQ */}
+          {/* Contact Info & Map */}
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
+            initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
             className="space-y-8"
           >
-            {/* Contact Methods */}
-            <div className="space-y-6">
-              <h3 className="text-3xl font-bold text-slate-800 mb-8">Get in Touch</h3>
-              
-              {contactMethods.map((method, index) => (
+            {/* Contact Cards */}
+            <div className="space-y-4">
+              {contactInfo.map((info, index) => (
                 <motion.div
                   key={index}
-                  initial={{ opacity: 0, y: 30 }}
+                  initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
                   viewport={{ once: true }}
-                  whileHover={{ scale: 1.02, y: -5 }}
-                  className={`relative p-6 bg-gradient-to-br ${method.bgGradient} backdrop-blur-xl rounded-2xl border ${method.borderColor} shadow-lg overflow-hidden group cursor-pointer`}
+                  className={`${info.bgColor} rounded-2xl p-6 hover:shadow-lg transition-all cursor-pointer`}
                 >
-                  {/* Hover Glow */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  
-                  <div className="relative z-10 flex items-center gap-4">
-                    <div className="flex items-center gap-4 flex-1">
-                      <motion.div
-                        whileHover={{ rotate: 360 }}
-                        transition={{ duration: 0.6 }}
-                        className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/30"
-                      >
-                        <method.icon className={`w-7 h-7 ${method.color}`} />
-                      </motion.div>
-                      <div className="flex-1">
-                        <h4 className="text-lg font-bold text-slate-800 mb-1">{method.title}</h4>
-                        <p className="text-slate-700 font-semibold">{method.info}</p>
-                        <p className="text-slate-600 text-sm">{method.description}</p>
-                      </div>
+                  <div className="flex items-start gap-4">
+                    <div className={`w-12 h-12 ${info.bgColor} rounded-xl flex items-center justify-center flex-shrink-0`}>
+                      <info.icon className={`w-6 h-6 ${info.color}`} />
                     </div>
-                    <span className="text-3xl">{method.emoji}</span>
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-1">{info.title}</h4>
+                      <p className={`${info.color} font-medium`}>{info.info}</p>
+                      <p className="text-gray-600 text-sm">{info.description}</p>
+                    </div>
                   </div>
                 </motion.div>
               ))}
             </div>
 
-            {/* FAQ Section */}
-            <div className="bg-white/60 backdrop-blur-xl rounded-2xl border border-white/40 shadow-xl p-6">
-              <h3 className="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-                <Star className="w-6 h-6 text-yellow-500" />
-                Quick FAQ
-              </h3>
-              
-              <div className="space-y-4">
-                {faqs.map((faq, index) => (
-                  <motion.div
+            {/* Map Placeholder */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              viewport={{ once: true }}
+              className="bg-gray-100 rounded-2xl h-64 flex items-center justify-center"
+            >
+              <div className="text-center">
+                <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                <p className="text-gray-500">Map Placeholder</p>
+              </div>
+            </motion.div>
+
+            {/* Social Media */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              viewport={{ once: true }}
+              className="bg-orange-50 rounded-2xl p-6"
+            >
+              <h4 className="font-semibold text-gray-900 mb-4">Follow Kami</h4>
+              <div className="space-y-3">
+                {socialMedia.map((social, index) => (
+                  <a
                     key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: index * 0.1 }}
-                    viewport={{ once: true }}
-                    className="border-b border-slate-200 pb-4 last:border-b-0"
+                    href={social.link}
+                    className="flex items-center gap-3 text-gray-700 hover:text-orange-600 transition-colors"
                   >
-                    <h4 className="font-semibold text-slate-800 mb-2 flex items-center gap-2">
-                      <ArrowRight className="w-4 h-4 text-purple-500" />
-                      {faq.question}
-                    </h4>
-                    <p className="text-slate-600 text-sm leading-relaxed pl-6">
-                      {faq.answer}
-                    </p>
-                  </motion.div>
+                    <social.icon className="w-5 h-5" />
+                    <span>{social.name}</span>
+                  </a>
                 ))}
               </div>
-            </div>
+            </motion.div>
           </motion.div>
         </div>
 
         {/* Bottom CTA */}
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
+          transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-center"
+          className="bg-gradient-to-r from-green-500 to-green-600 rounded-3xl p-12 text-center"
         >
-          <div className="relative bg-gradient-to-r from-slate-800 via-purple-900 to-slate-800 rounded-3xl p-12 overflow-hidden">
-            {/* Background Animation */}
-            <div className="absolute inset-0 opacity-20">
-              <motion.div 
-                animate={{ 
-                  scale: [1, 1.1, 1],
-                  rotate: [0, 90, 180, 270, 360]
-                }}
-                transition={{ 
-                  duration: 30, 
-                  repeat: Infinity, 
-                  ease: "linear" 
-                }}
-                className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-purple-400/30 to-pink-400/30"
-              />
-            </div>
-
-            <div className="relative z-10">
-              <motion.div
-                animate={{ 
-                  y: [-5, 5, -5],
-                  rotate: [0, 10, -10, 0]
-                }}
-                transition={{ 
-                  duration: 4, 
-                  repeat: Infinity, 
-                  ease: "easeInOut"
-                }}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 backdrop-blur-md rounded-full border border-white/20 shadow-lg mb-6"
-              >
-                <Heart className="w-5 h-5 text-pink-400" />
-                <span className="text-white font-semibold">Trusted by 50K+ Happy Customers</span>
-              </motion.div>
-
-              <h3 className="text-4xl md:text-5xl font-black text-white mb-6">
-                Join the Healthy Food Revolution!
-              </h3>
-              
-              <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-                Mulai hidup sehat hari ini. Dapatkan free consultation dengan nutritionist dan diskon 50% untuk order pertama.
-              </p>
-              
-              <motion.button
-                whileHover={{ 
-                  scale: 1.05,
-                  boxShadow: "0 20px 40px rgba(255,255,255,0.2)"
-                }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-gradient-to-r from-yellow-400 to-orange-500 text-slate-800 px-12 py-4 rounded-2xl font-bold text-lg hover:from-yellow-300 hover:to-orange-400 transition-all duration-300 shadow-xl"
-              >
-                <Zap className="inline mr-2 w-6 h-6" />
-                Start Free Trial Today
-              </motion.button>
-            </div>
+          <h3 className="text-3xl font-bold text-white mb-4">
+            Butuh Bantuan Cepat?
+          </h3>
+          <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+            Customer service kami siap melayani Anda setiap hari dari jam 06:00 - 22:00 WIB
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <motion.a
+              href="tel:+628118888732"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="bg-white text-green-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-green-50 transition-all inline-flex items-center justify-center gap-2"
+            >
+              <Phone className="w-5 h-5" />
+              Telepon Sekarang
+            </motion.a>
+            <motion.a
+              href="https://wa.me/628118888732"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="bg-green-700 text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-green-800 transition-all inline-flex items-center justify-center gap-2"
+            >
+              <MessageCircle className="w-5 h-5" />
+              WhatsApp
+            </motion.a>
           </div>
         </motion.div>
       </div>
