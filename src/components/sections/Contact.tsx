@@ -23,7 +23,7 @@ export const Contact: React.FC = () => {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-[#2C3E50] mb-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-primary-navy mb-6 font-inter">
             Hubungi Kami
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
@@ -42,14 +42,14 @@ export const Contact: React.FC = () => {
             className="space-y-8"
           >
             {/* Manager Contact */}
-            <Card className="bg-gradient-to-r from-[#FF6B35]/5 to-[#00C896]/5 border-[#FF6B35]/20">
+            <Card className="bg-gradient-to-r from-primary-orange/5 to-primary-green/5 border-primary-orange/20">
               <CardHeader>
                 <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-[#FF6B35]/10 rounded-full flex items-center justify-center">
-                    <User className="w-6 h-6 text-[#FF6B35]" />
+                  <div className="w-12 h-12 bg-primary-orange/10 rounded-full flex items-center justify-center">
+                    <User className="w-6 h-6 text-primary-orange" />
                   </div>
                   <div>
-                    <h4 className="text-lg font-semibold text-[#2C3E50]">
+                    <h4 className="text-lg font-semibold text-primary-navy">
                       Manager
                     </h4>
                     <p className="text-gray-600">Customer Service Lead</p>
@@ -59,14 +59,14 @@ export const Contact: React.FC = () => {
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex items-center space-x-3">
-                    <User className="w-5 h-5 text-[#FF6B35]" />
-                    <span className="font-semibold text-[#2C3E50] text-lg">Brian</span>
+                    <User className="w-5 h-5 text-primary-orange" />
+                    <span className="font-semibold text-primary-navy text-lg">Brian</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <Phone className="w-5 h-5 text-[#00C896]" />
+                    <Phone className="w-5 h-5 text-primary-green" />
                     <a 
                       href="tel:08123456789" 
-                      className="text-[#00C896] hover:underline font-medium text-lg"
+                      className="text-primary-green hover:underline font-medium text-lg"
                     >
                       08123456789
                     </a>
@@ -94,7 +94,7 @@ export const Contact: React.FC = () => {
           >
             <Card className="h-full">
               <CardHeader>
-                <h3 className="text-2xl font-bold text-[#2C3E50] mb-2">
+                <h3 className="text-2xl font-bold text-primary-navy mb-2 font-inter">
                   Kirim Pesan Cepat
                 </h3>
                 <p className="text-gray-600">
@@ -104,34 +104,34 @@ export const Contact: React.FC = () => {
               <CardContent>
                 <form className="space-y-6">
                   <div>
-                    <label className="block text-sm font-medium text-[#2C3E50] mb-2">
+                    <label className="block text-sm font-medium text-primary-navy mb-2">
                       Nama Lengkap
                     </label>
                     <input
                       type="text"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF6B35] focus:border-[#FF6B35] outline-none transition-colors"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-orange focus:border-primary-orange outline-none transition-colors"
                       placeholder="Masukkan nama lengkap Anda"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-[#2C3E50] mb-2">
+                    <label className="block text-sm font-medium text-primary-navy mb-2">
                       Email
                     </label>
                     <input
                       type="email"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF6B35] focus:border-[#FF6B35] outline-none transition-colors"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-orange focus:border-primary-orange outline-none transition-colors"
                       placeholder="nama@email.com"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-[#2C3E50] mb-2">
+                    <label className="block text-sm font-medium text-primary-navy mb-2">
                       Pesan
                     </label>
                     <textarea
                       rows={4}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF6B35] focus:border-[#FF6B35] outline-none transition-colors resize-none"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-orange focus:border-primary-orange outline-none transition-colors resize-none"
                       placeholder="Tulis pesan Anda di sini..."
                     ></textarea>
                   </div>
@@ -154,8 +154,8 @@ export const Contact: React.FC = () => {
           viewport={{ once: true }}
           className="mt-16"
         >
-          <div className="bg-gradient-to-r from-[#FF6B35] to-[#00C896] rounded-2xl p-8 text-white text-center">
-            <h3 className="text-2xl md:text-3xl font-bold mb-4">
+          <div className="bg-gradient-to-r from-primary-orange to-primary-green rounded-2xl p-8 text-white text-center">
+            <h3 className="text-2xl md:text-3xl font-bold mb-4 font-inter">
               Butuh Bantuan Segera? Hubungi Brian!
             </h3>
             <p className="text-lg mb-6 text-white/90">
@@ -163,7 +163,7 @@ export const Contact: React.FC = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
-                className="bg-white text-[#FF6B35] hover:bg-gray-100"
+                className="bg-white text-primary-orange hover:bg-gray-100"
                 onClick={() => window.open('tel:08123456789')}
               >
                 <Phone className="mr-2 w-4 h-4" />
@@ -171,7 +171,7 @@ export const Contact: React.FC = () => {
               </Button>
               <Button 
                 variant="outline"
-                className="border-white text-white hover:bg-white hover:text-[#FF6B35]"
+                className="border-white text-white hover:bg-white hover:text-primary-orange"
                 onClick={() => window.open('https://wa.me/628123456789')}
               >
                 <MessageCircle className="mr-2 w-4 h-4" />

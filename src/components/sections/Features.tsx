@@ -20,43 +20,43 @@ const features = [
     icon: Utensils,
     title: "Kustomisasi Makanan",
     description: "Sesuaikan menu sesuai preferensi diet, alergi, dan selera Anda dengan lebih dari 100 pilihan makanan sehat.",
-    color: "text-[#F39C12]",
-    bgColor: "bg-[#F39C12]/10"
+    color: "text-food-breakfast",
+    bgColor: "bg-food-breakfast/10"
   },
   {
     icon: Truck,
     title: "Pengiriman ke Seluruh Indonesia",
     description: "Jangkauan pengiriman ke 25+ kota besar di Indonesia dengan sistem logistik yang handal dan tepat waktu.",
-    color: "text-[#00C896]",
-    bgColor: "bg-[#00C896]/10"
+    color: "text-primary-green",
+    bgColor: "bg-primary-green/10"
   },
   {
     icon: BarChart3,
     title: "Informasi Nutrisi Lengkap",
     description: "Dapatkan detail kalori, protein, karbohidrat, dan vitamin dalam setiap makanan untuk gaya hidup sehat.",
-    color: "text-[#6C63FF]",
-    bgColor: "bg-[#6C63FF]/10"
+    color: "text-accent-purple",
+    bgColor: "bg-accent-purple/10"
   },
   {
     icon: Clock,
     title: "Jadwal Fleksibel",
     description: "Atur jadwal pengiriman sesuai kebutuhan Anda, dari harian hingga mingguan dengan reminder otomatis.",
-    color: "text-[#E91E63]",
-    bgColor: "bg-[#E91E63]/10"
+    color: "text-food-dessert",
+    bgColor: "bg-food-dessert/10"
   },
   {
     icon: Shield,
     title: "Kualitas Terjamin",
     description: "Standar keamanan pangan internasional dan bahan-bahan segar dari supplier terpercaya.",
-    color: "text-[#FF6B35]",
-    bgColor: "bg-[#FF6B35]/10"
+    color: "text-primary-orange",
+    bgColor: "bg-primary-orange/10"
   },
   {
     icon: Heart,
     title: "Konsultasi Nutrisi",
     description: "Akses ke ahli gizi profesional untuk panduan diet personal dan tips kesehatan harian.",
-    color: "text-[#26D0CE]",
-    bgColor: "bg-[#26D0CE]/10"
+    color: "text-accent-teal",
+    bgColor: "bg-accent-teal/10"
   }
 ];
 
@@ -111,7 +111,7 @@ export const Features: React.FC = () => {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-[#2C3E50] mb-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-primary-navy mb-6 font-inter">
             Kenapa Pilih SEA Catering?
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
@@ -135,7 +135,7 @@ export const Features: React.FC = () => {
                   <div className={`w-16 h-16 rounded-full ${feature.bgColor} flex items-center justify-center mb-4`}>
                     <feature.icon className={`w-8 h-8 ${feature.color}`} />
                   </div>
-                  <h3 className="text-xl font-semibold text-[#2C3E50] mb-2">
+                  <h3 className="text-xl font-semibold text-primary-navy mb-2">
                     {feature.title}
                   </h3>
                 </CardHeader>
@@ -157,7 +157,7 @@ export const Features: React.FC = () => {
           viewport={{ once: true }}
           className="bg-white rounded-2xl p-8 shadow-lg"
         >
-          <h3 className="text-2xl font-bold text-[#2C3E50] mb-8 text-center">
+          <h3 className="text-2xl font-bold text-primary-navy mb-8 text-center font-inter">
             Plus Fitur Unggulan Lainnya
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -170,11 +170,11 @@ export const Features: React.FC = () => {
                 viewport={{ once: true }}
                 className="flex items-start space-x-4"
               >
-                <div className="w-12 h-12 bg-[#FF6B35]/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <feature.icon className="w-6 h-6 text-[#FF6B35]" />
+                <div className="w-12 h-12 bg-primary-orange/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <feature.icon className="w-6 h-6 text-primary-orange" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-[#2C3E50] mb-2">
+                  <h4 className="font-semibold text-primary-navy mb-2">
                     {feature.title}
                   </h4>
                   <p className="text-gray-600 text-sm">
@@ -194,8 +194,8 @@ export const Features: React.FC = () => {
           viewport={{ once: true }}
           className="text-center mt-16"
         >
-          <div className="bg-gradient-to-r from-[#FF6B35] to-[#00C896] rounded-2xl p-8 text-white">
-            <h3 className="text-2xl md:text-3xl font-bold mb-4">
+          <div className="bg-gradient-to-r from-primary-orange to-primary-green rounded-2xl p-8 text-white">
+            <h3 className="text-2xl md:text-3xl font-bold mb-4 font-inter">
               Siap Memulai Hidup Sehat Anda?
             </h3>
             <p className="text-lg mb-6 text-white/90">
@@ -204,7 +204,7 @@ export const Features: React.FC = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-white text-[#FF6B35] px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-300"
+              className="bg-white text-primary-orange px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-300"
             >
               Mulai Berlangganan Sekarang
             </motion.button>

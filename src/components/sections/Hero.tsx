@@ -14,15 +14,12 @@ export const Hero: React.FC = () => {
 
   if (!mounted) {
     return (
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Gradient Background */}
-        <div className="absolute inset-0 gradient-hero"></div>
-        
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary-orange to-primary-green">
         {/* Static content for SSR */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="space-y-8">
             <div className="mb-8">
-              <h1 className="text-6xl md:text-8xl font-bold text-white mb-4 tracking-tight">
+              <h1 className="text-6xl md:text-8xl font-bold text-white mb-4 tracking-tight font-inter">
                 SEA Catering
               </h1>
               <div className="flex items-center justify-center gap-2 text-white/90 text-xl">
@@ -36,7 +33,7 @@ export const Hero: React.FC = () => {
             </div>
 
             <p className="text-2xl md:text-4xl text-white/95 font-light mb-8 max-w-4xl mx-auto leading-relaxed">
-              "Healthy Meals, Anytime, Anywhere"
+              &quot;Healthy Meals, Anytime, Anywhere&quot;
             </p>
 
             <p className="text-lg md:text-xl text-white/90 max-w-3xl mx-auto mb-12 leading-relaxed">
@@ -47,7 +44,7 @@ export const Hero: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button 
                 size="lg" 
-                className="bg-white text-[#FF6B35] hover:bg-gray-100 min-w-[200px]"
+                className="bg-white text-primary-orange hover:bg-gray-100 min-w-[200px]"
               >
                 Mulai Berlangganan
                 <ArrowRight className="ml-2 w-5 h-5" />
@@ -56,7 +53,7 @@ export const Hero: React.FC = () => {
               <Button 
                 variant="outline" 
                 size="lg"
-                className="border-white text-white hover:bg-white hover:text-[#FF6B35] min-w-[200px]"
+                className="border-white text-white hover:bg-white hover:text-primary-orange min-w-[200px]"
               >
                 <Phone className="mr-2 w-5 h-5" />
                 Hubungi Kami
@@ -86,7 +83,7 @@ export const Hero: React.FC = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Gradient Background */}
-      <div className="absolute inset-0 gradient-hero"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-primary-orange to-primary-green"></div>
       
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
@@ -109,7 +106,7 @@ export const Hero: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="mb-8"
           >
-            <h1 className="text-6xl md:text-8xl font-bold text-white mb-4 tracking-tight">
+            <h1 className="text-6xl md:text-8xl font-bold text-white mb-4 tracking-tight font-inter">
               SEA Catering
             </h1>
             <div className="flex items-center justify-center gap-2 text-white/90 text-xl">
@@ -129,7 +126,7 @@ export const Hero: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="text-2xl md:text-4xl text-white/95 font-light mb-8 max-w-4xl mx-auto leading-relaxed"
           >
-            "Healthy Meals, Anytime, Anywhere"
+            &quot;Healthy Meals, Anytime, Anywhere&quot;
           </motion.p>
 
           {/* Description */}
@@ -152,7 +149,7 @@ export const Hero: React.FC = () => {
           >
             <Button 
               size="lg" 
-              className="bg-white text-[#FF6B35] hover:bg-gray-100 min-w-[200px]"
+              className="bg-white text-primary-orange hover:bg-gray-100 min-w-[200px]"
             >
               Mulai Berlangganan
               <ArrowRight className="ml-2 w-5 h-5" />
@@ -161,7 +158,7 @@ export const Hero: React.FC = () => {
             <Button 
               variant="outline" 
               size="lg"
-              className="border-white text-white hover:bg-white hover:text-[#FF6B35] min-w-[200px]"
+              className="border-white text-white hover:bg-white hover:text-primary-orange min-w-[200px]"
             >
               <Phone className="mr-2 w-5 h-5" />
               Hubungi Kami
