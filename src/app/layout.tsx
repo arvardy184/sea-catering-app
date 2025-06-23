@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
@@ -29,11 +29,6 @@ export const metadata: Metadata = {
     description: "Premium healthy meal delivery service across Indonesia",
     creator: "@seacatering",
   },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-  },
   robots: {
     index: true,
     follow: true,
@@ -47,14 +42,23 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={inter.variable}>
-      <body className={`${inter.className} antialiased`}>
+    <html lang="id" className={inter.variable} suppressHydrationWarning>
+      <body 
+        className={`${inter.className} antialiased`} 
+        suppressHydrationWarning
+      >
         {children}
       </body>
     </html>

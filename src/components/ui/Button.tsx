@@ -12,26 +12,34 @@ export const Button: React.FC<ButtonProps> = ({
   size = 'md',
   className,
   children,
+  disabled,
   ...props
 }) => {
-  const baseStyles = "inline-flex items-center justify-center rounded-lg font-medium smooth-transition focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
+  const baseStyles = "inline-flex items-center justify-center rounded-lg font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
   
   const variants = {
-    primary: "bg-[#FF6B35] text-white hover:bg-[#e55a2b] focus:ring-[#FF6B35]",
-    secondary: "bg-[#00C896] text-white hover:bg-[#00b085] focus:ring-[#00C896]",
-    outline: "border-2 border-[#FF6B35] text-[#FF6B35] hover:bg-[#FF6B35] hover:text-white focus:ring-[#FF6B35]",
-    ghost: "text-[#2C3E50] hover:bg-gray-100 focus:ring-gray-200"
+    primary: "bg-[#FF6B35] text-white hover:bg-[#e55a2b] focus:ring-[#FF6B35] active:bg-[#d14d24]",
+    secondary: "bg-[#00C896] text-white hover:bg-[#00b085] focus:ring-[#00C896] active:bg-[#009970]",
+    outline: "border-2 border-[#FF6B35] text-[#FF6B35] hover:bg-[#FF6B35] hover:text-white focus:ring-[#FF6B35] active:bg-[#e55a2b]",
+    ghost: "text-[#2C3E50] hover:bg-gray-100 focus:ring-gray-200 active:bg-gray-200"
   };
   
   const sizes = {
-    sm: "px-4 py-2 text-sm",
-    md: "px-6 py-3 text-base",
-    lg: "px-8 py-4 text-lg"
+    sm: "px-4 py-2 text-sm h-9",
+    md: "px-6 py-3 text-base h-11",
+    lg: "px-8 py-4 text-lg h-12"
   };
 
   return (
     <button
-      className={cn(baseStyles, variants[variant], sizes[size], className)}
+      className={cn(
+        baseStyles, 
+        variants[variant], 
+        sizes[size], 
+        disabled && "opacity-50 cursor-not-allowed pointer-events-none",
+        className
+      )}
+      disabled={disabled}
       {...props}
     >
       {children}

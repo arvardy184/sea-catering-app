@@ -6,9 +6,6 @@ import { Card, CardContent, CardHeader } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { 
   Phone, 
-  Mail, 
-  MapPin, 
-  Clock,
   User,
   MessageCircle,
   Send
