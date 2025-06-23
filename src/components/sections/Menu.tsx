@@ -137,7 +137,7 @@ export const Menu: React.FC = () => {
     : menuItems.filter(item => item.category === selectedCategory);
 
   return (
-    <section className="relative py-20 overflow-hidden bg-gray-50">
+    <section id="menu" className="relative py-20 overflow-hidden bg-gray-50">
       {/* Subtle Pattern */}
       <div className="absolute inset-0 opacity-[0.02]" style={{
         backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M20 20v20H0V20H20zM40 20v20H20V20H40zM20 0v20H0V0H20zM40 0v20H20V0H40z'/%3E%3C/g%3E%3C/svg%3E")`

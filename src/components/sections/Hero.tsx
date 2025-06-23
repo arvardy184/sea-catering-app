@@ -22,6 +22,16 @@ export const Hero: React.FC = () => {
     setMounted(true);
   }, []);
 
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
+
   if (!mounted) {
     return (
       <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-green-50 to-orange-50">
@@ -155,6 +165,7 @@ export const Hero: React.FC = () => {
             >
               <Button 
                 size="lg" 
+                onClick={() => scrollToSection('contact')}
                 className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all"
               >
                 <ShoppingBag className="mr-2 w-5 h-5" />
@@ -164,6 +175,7 @@ export const Hero: React.FC = () => {
               <Button 
                 variant="outline" 
                 size="lg"
+                onClick={() => scrollToSection('menu')}
                 className="border-2 border-gray-300 hover:border-orange-500 text-gray-700 hover:text-orange-500 px-8 py-4 rounded-full font-semibold text-lg transition-all"
               >
                 Lihat Menu
