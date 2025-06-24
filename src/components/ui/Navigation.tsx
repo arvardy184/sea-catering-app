@@ -14,7 +14,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { name: 'Home', href: '#hero' },
   { name: 'Menu', href: '#menu' },
-  { name: 'Reviews', href: '#testimonials' },
+  { name: 'Subscription', href: '#subscription' },
   { name: 'Contact', href: '#contact' },
 ];
 
@@ -37,7 +37,7 @@ export const Navigation: React.FC = () => {
       setScrolled(window.scrollY > 50);
       
       // Update active section based on scroll position
-      const sections = ['hero', 'features', 'menu', 'testimonials', 'contact'];
+      const sections = ['hero', 'features', 'menu', 'testimonials', 'subscription', 'contact'];
       const current = sections.find(section => {
         const element = document.getElementById(section);
         if (element) {
@@ -179,7 +179,7 @@ export const Navigation: React.FC = () => {
             </Button>
             <Button
               size="sm"
-              onClick={() => scrollToSection('#contact')}
+              onClick={() => scrollToSection('#subscription')}
               className="bg-orange-500 hover:bg-orange-600 text-white"
             >
               <ShoppingBag className="w-4 h-4 mr-2" />
@@ -246,7 +246,7 @@ export const Navigation: React.FC = () => {
                 </Button>
                                  <Button
                    size="sm"
-                   onClick={() => scrollToSection('#contact')}
+                   onClick={() => scrollToSection('#subscription')}
                    className="w-full bg-orange-500 hover:bg-orange-600 text-white justify-center"
                  >
                    <ShoppingBag className="w-4 h-4 mr-2" />
