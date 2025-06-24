@@ -34,12 +34,24 @@ export const Hero: React.FC = () => {
 
   if (!mounted) {
     return (
-      <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-green-50 to-orange-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6">
-              Loading...
-            </h1>
+      <section id="hero" className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-green-50 to-orange-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="text-left">
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+                Makanan Sehat,
+                <span className="text-orange-500 block">Hidup Lebih Baik</span>
+              </h1>
+              <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+                Nikmati hidangan lezat yang dirancang khusus untuk kesehatan Anda. 
+                Diantar fresh setiap hari, langsung ke pintu rumah Anda.
+              </p>
+            </div>
+            <div className="relative">
+              <div className="w-full h-[500px] bg-gradient-to-br from-orange-100 to-green-100 rounded-3xl shadow-2xl flex items-center justify-center">
+                <span className="text-gray-400 text-xl">Loading...</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -47,7 +59,7 @@ export const Hero: React.FC = () => {
   }
 
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden">
+    <section id="hero" className="relative min-h-screen flex items-center overflow-hidden">
       {/* Natural Background Gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-green-50 via-white to-orange-50"></div>
       

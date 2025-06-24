@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
+import { MealPlanModal } from '@/components/ui/Modal';
 import { 
   Clock,
   Flame,
@@ -24,6 +25,14 @@ interface MenuItem {
   tags: string[];
   imageUrl?: string;
   popular?: boolean;
+  nutritionInfo?: {
+    protein: number;
+    carbs: number;
+    fats: number;
+    fiber: number;
+  };
+  ingredients?: string[];
+  allergens?: string[];
 }
 
 const categories = [
@@ -131,10 +140,22 @@ const menuItems: MenuItem[] = [
 export const Menu: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [hoveredItem, setHoveredItem] = useState<number | null>(null);
+  const [selectedMeal, setSelectedMeal] = useState<MenuItem | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const filteredItems = selectedCategory === 'all' 
     ? menuItems 
     : menuItems.filter(item => item.category === selectedCategory);
+
+  const openModal = (item: MenuItem) => {
+    setSelectedMeal(item);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedMeal(null);
+  };
 
   return (
     <section id="menu" className="relative py-20 overflow-hidden bg-gray-50">
@@ -253,10 +274,11 @@ export const Menu: React.FC = () => {
                 >
                   <Button
                     size="sm"
+                    onClick={() => openModal(item)}
                     className="bg-white text-gray-900 hover:bg-gray-100"
                   >
                     <Info className="w-4 h-4 mr-1" />
-                    Quick View
+                    See Details
                   </Button>
                 </motion.div>
               </div>
@@ -343,6 +365,13 @@ export const Menu: React.FC = () => {
           </Button>
         </motion.div>
       </div>
+
+      {/* Meal Plan Modal */}
+      <MealPlanModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        mealPlan={selectedMeal}
+      />
     </section>
   );
 };

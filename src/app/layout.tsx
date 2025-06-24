@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import { Navigation } from "@/components/ui/Navigation";
 import "./globals.css";
 
 const inter = Inter({
@@ -59,7 +60,10 @@ export default function RootLayout({
         className={`${inter.className} antialiased`} 
         suppressHydrationWarning
       >
-        {children}
+        <div suppressHydrationWarning>
+          <Navigation />
+          {children}
+        </div>
       </body>
     </html>
   );
