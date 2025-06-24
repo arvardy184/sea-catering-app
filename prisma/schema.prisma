@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// This is your Prisma schema file
+
+model Subscription {
+  id           String   @id @default(cuid())
+  name         String
+  phone        String
+  plan         String   // 'diet' | 'protein' | 'royal'
+  mealTypes    String   // JSON string array
+  deliveryDays String   // JSON string array
+  allergies    String?
+  totalPrice   Float
+  status       String   @default("active")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("subscriptions")
+}
+
+model MealPlan {
+  id           String  @id @default(cuid())
+  name         String
+  category     String
+  description  String
+  price        Float
+  calories     Int
+  cookingTime  String
+  rating       Float   @default(4.5)
+  tags         String  // JSON string array
+  popular      Boolean @default(false)
+  
+  // Nutrition info
+  protein      Float?
+  carbs        Float?
+  fats         Float?
+  fiber        Float?
+  
+  ingredients  String? // JSON string array
+  allergens    String? // JSON string array
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("meal_plans")
+}
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String
+  message   String
+  rating    Int      // 1-5
+  location  String?
+  approved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("testimonials")
+}
