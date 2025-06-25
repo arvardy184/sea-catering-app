@@ -13,7 +13,6 @@ import {
   Shield,
   Calculator,
   Users,
-  Calendar,
   Utensils
 } from 'lucide-react';
 
@@ -94,7 +93,7 @@ export const Subscription: React.FC = () => {
     return selectedPlan.price * formData.mealTypes.length * formData.deliveryDays.length * 4.3;
   };
 
-  const handleInputChange = (field: keyof SubscriptionFormData, value: any) => {
+  const handleInputChange = (field: keyof SubscriptionFormData, value: string | string[]) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -111,22 +110,47 @@ export const Subscription: React.FC = () => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    alert(`Subscription berhasil dibuat!\nTotal: ${formatCurrency(calculatePrice())}\nBrian akan menghubungi Anda segera.`);
-    
-    // Reset form
-    setFormData({
-      name: '',
-      phone: '',
-      plan: '',
-      mealTypes: [],
-      deliveryDays: [],
-      allergies: ''
-    });
-    setCurrentStep(1);
-    setIsSubmitting(false);
+    try {
+      const response = await fetch('/api/subscriptions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          phone: formData.phone,
+          plan: formData.plan,
+          mealTypes: formData.mealTypes,
+          deliveryDays: formData.deliveryDays,
+          allergies: formData.allergies,
+          totalPrice: calculatePrice(),
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert(`🎉 Subscription berhasil dibuat!\n\nTotal: ${formatCurrency(calculatePrice())}\n\nBrian akan menghubungi Anda di ${formData.phone} untuk konfirmasi pesanan dalam 1x24 jam.`);
+        
+        // Reset form
+        setFormData({
+          name: '',
+          phone: '',
+          plan: '',
+          mealTypes: [],
+          deliveryDays: [],
+          allergies: ''
+        });
+        setCurrentStep(1);
+      } else {
+        alert(`❌ Error: ${result.error || 'Gagal membuat subscription'}`);
+      }
+    } catch (error) {
+      console.error('Error submitting subscription:', error);
+      alert('❌ Terjadi kesalahan. Silakan coba lagi.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const isStepValid = (step: number) => {
