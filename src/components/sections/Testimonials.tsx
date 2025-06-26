@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, ChevronLeft, ChevronRight, Quote, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
@@ -20,6 +20,17 @@ interface TestimonialFormData {
   name: string;
   message: string;
   rating: number;
+}
+
+interface ApiTestimonial {
+  id: string;
+  name: string;
+  message: string;
+  rating: number;
+  location?: string;
+  approved: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Sample testimonials data
@@ -59,14 +70,54 @@ const initialTestimonials: Testimonial[] = [
 ];
 
 export const Testimonials: React.FC = () => {
-  const [testimonials, setTestimonials] = useState<Testimonial[]>(initialTestimonials);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showForm, setShowForm] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<TestimonialFormData>({
     name: '',
     message: '',
     rating: 5
   });
+
+  // Fetch testimonials from API
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch('/api/testimonials');
+        const result = await response.json();
+        
+        if (response.ok && result.data) {
+          const transformedTestimonials: Testimonial[] = result.data.map((item: ApiTestimonial, index: number) => ({
+            id: index + 1,
+            name: item.name,
+            message: item.message,
+            rating: item.rating,
+            date: new Date(item.createdAt).toISOString().split('T')[0],
+            location: item.location || "Indonesia"
+          }));
+          setTestimonials(transformedTestimonials);
+          
+          // Reset currentIndex if testimonials array changes
+          if (transformedTestimonials.length > 0) {
+            setCurrentIndex(0);
+          }
+        } else {
+          console.warn('No testimonials data received from API');
+          setTestimonials(initialTestimonials);
+        }
+      } catch (error) {
+        console.error('Error fetching testimonials:', error);
+        setTestimonials(initialTestimonials);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTestimonials();
+  }, []);
 
   const nextTestimonial = () => {
     setCurrentIndex((prev) => (prev + 1) % testimonials.length);
@@ -76,25 +127,44 @@ export const Testimonials: React.FC = () => {
     setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (formData.name.trim() && formData.message.trim()) {
-      const newTestimonial: Testimonial = {
-        id: Date.now(),
-        name: formData.name,
-        message: formData.message,
-        rating: formData.rating,
-        date: new Date().toISOString().split('T')[0],
-        location: "Indonesia"
-      };
+      setIsSubmitting(true);
       
-      setTestimonials([newTestimonial, ...testimonials]);
-      setFormData({ name: '', message: '', rating: 5 });
-      setShowForm(false);
-      
-      // Show success message (could be replaced with toast)
-      alert('Terima kasih atas review Anda!');
+      try {
+        const response = await fetch('/api/testimonials', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            message: formData.message,
+            rating: formData.rating,
+            location: 'Indonesia'
+          }),
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          alert('🎉 Terima kasih atas review Anda! Review akan ditampilkan setelah dimoderasi.');
+          setFormData({ name: '', message: '', rating: 5 });
+          setShowForm(false);
+          
+          // Optionally refresh testimonials
+          // Note: New testimonial won't show immediately due to approval process
+        } else {
+          alert(`❌ Error: ${result.error || 'Gagal mengirim review'}`);
+        }
+      } catch (error) {
+        console.error('Error submitting testimonial:', error);
+        alert('❌ Terjadi kesalahan. Silakan coba lagi.');
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -184,54 +254,84 @@ export const Testimonials: React.FC = () => {
             className="relative"
           >
             
-            {/* Main Testimonial Card */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentIndex}
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -50 }}
-                transition={{ duration: 0.5 }}
-              >
-                <Card className="p-8 relative overflow-hidden">
-                  
-                  {/* Quote Icon */}
-                  <div className="absolute top-4 right-4 opacity-10">
-                    <Quote className="w-16 h-16 text-orange-500" />
+            {isLoading ? (
+              /* Loading State */
+              <div className="animate-pulse">
+                <div className="bg-white rounded-2xl p-8 shadow-md">
+                  <div className="flex gap-2 mb-4">
+                    {[1,2,3,4,5].map(i => (
+                      <div key={i} className="w-5 h-5 bg-gray-200 rounded"></div>
+                    ))}
                   </div>
-                  
-                  <div className="relative z-10">
-                    
-                    {/* Rating */}
-                    <div className="mb-4">
-                      {renderStars(testimonials[currentIndex].rating)}
-                    </div>
-                    
-                    {/* Message */}
-                    <blockquote className="text-gray-700 text-lg leading-relaxed mb-6">
-                      &quot;{testimonials[currentIndex].message}&quot;
-                    </blockquote>
-                    
-                    {/* Author */}
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-pink-400 rounded-full flex items-center justify-center">
-                        <span className="text-white font-bold text-lg">
-                          {testimonials[currentIndex].name[0]}
-                        </span>
-                      </div>
-                      <div>
-                        <div className="font-semibold text-gray-900">
-                          {testimonials[currentIndex].name}
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          {testimonials[currentIndex].location} • {testimonials[currentIndex].date}
-                        </div>
-                      </div>
+                  <div className="space-y-3">
+                    <div className="h-4 bg-gray-200 rounded w-full"></div>
+                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                  </div>
+                  <div className="flex items-center gap-4 mt-6">
+                    <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
+                    <div className="space-y-2">
+                      <div className="h-3 bg-gray-200 rounded w-24"></div>
+                      <div className="h-3 bg-gray-200 rounded w-32"></div>
                     </div>
                   </div>
-                </Card>
-              </motion.div>
-            </AnimatePresence>
+                </div>
+              </div>
+            ) : testimonials.length > 0 ? (
+              /* Main Testimonial Card */
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentIndex}
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -50 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <Card className="p-8 relative overflow-hidden">
+                    
+                    {/* Quote Icon */}
+                    <div className="absolute top-4 right-4 opacity-10">
+                      <Quote className="w-16 h-16 text-orange-500" />
+                    </div>
+                    
+                    <div className="relative z-10">
+                      
+                      {/* Rating */}
+                      <div className="mb-4">
+                        {renderStars(testimonials[currentIndex].rating)}
+                      </div>
+                      
+                      {/* Message */}
+                      <blockquote className="text-gray-700 text-lg leading-relaxed mb-6">
+                        &quot;{testimonials[currentIndex].message}&quot;
+                      </blockquote>
+                      
+                      {/* Author */}
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-pink-400 rounded-full flex items-center justify-center">
+                          <span className="text-white font-bold text-lg">
+                            {testimonials[currentIndex].name[0]}
+                          </span>
+                        </div>
+                        <div>
+                          <div className="font-semibold text-gray-900">
+                            {testimonials[currentIndex].name}
+                          </div>
+                          <div className="text-sm text-gray-600">
+                            {testimonials[currentIndex].location} • {testimonials[currentIndex].date}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                </motion.div>
+              </AnimatePresence>
+            ) : (
+              /* Empty State */
+              <div className="text-center py-12">
+                <p className="text-gray-500">Belum ada testimonial tersedia.</p>
+              </div>
+            )}
 
             {/* Navigation */}
             <div className="flex items-center justify-between mt-6">
@@ -362,9 +462,10 @@ export const Testimonials: React.FC = () => {
                     </Button>
                     <Button
                       type="submit"
-                      className="flex-1 bg-orange-500 hover:bg-orange-600 text-white"
+                      disabled={isSubmitting}
+                      className="w-full bg-orange-500 hover:bg-orange-600 text-white disabled:opacity-50"
                     >
-                      Kirim Review
+                      {isSubmitting ? 'Mengirim...' : 'Kirim Review'}
                     </Button>
                   </div>
                 </form>
