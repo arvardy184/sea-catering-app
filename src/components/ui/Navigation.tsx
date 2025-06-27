@@ -2,7 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ShoppingBag, Phone } from 'lucide-react';
+import { Menu, X, ShoppingBag, User, LogOut } from 'lucide-react';
+import { useSession, signOut } from 'next-auth/react';
+import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 import { Button } from './Button';
 
 interface NavItem {
@@ -23,6 +26,8 @@ export const Navigation: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
   const [mounted, setMounted] = useState(false);
+  const { data: session, status } = useSession();
+  const pathname = usePathname();
 
   // Handle client-side mounting
   useEffect(() => {
@@ -66,6 +71,11 @@ export const Navigation: React.FC = () => {
     }
     setIsOpen(false);
   };
+
+  // Don't show navigation on auth pages
+  if (pathname?.startsWith('/auth')) {
+    return null;
+  }
 
   // Prevent hydration mismatch by not rendering until mounted
   if (!mounted) {
@@ -161,30 +171,64 @@ export const Navigation: React.FC = () => {
             ))}
           </div>
 
-          {/* CTA Buttons */}
+          {/* Auth & CTA Buttons */}
           <div className="hidden lg:flex items-center space-x-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => scrollToSection('#contact')}
-              className={`
-                ${scrolled 
-                  ? 'text-gray-700 hover:text-orange-600' 
-                  : 'text-white hover:text-orange-300'
-                }
-              `}
-            >
-              <Phone className="w-4 h-4 mr-2" />
-              Call Brian
-            </Button>
-            <Button
-              size="sm"
-              onClick={() => scrollToSection('#subscription')}
-              className="bg-orange-500 hover:bg-orange-600 text-white"
-            >
-              <ShoppingBag className="w-4 h-4 mr-2" />
-              Order Now
-            </Button>
+            {status === 'loading' ? (
+              <div className="w-8 h-8 animate-spin rounded-full border-2 border-orange-500 border-t-transparent" />
+            ) : session ? (
+              <>
+                <Link 
+                  href="/dashboard"
+                  className={`
+                    inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors
+                    ${scrolled 
+                      ? 'text-gray-700 hover:text-orange-600 hover:bg-gray-100' 
+                      : 'text-white hover:text-orange-300 hover:bg-white/10'
+                    }
+                  `}
+                >
+                  <User className="w-4 h-4 mr-2" />
+                  {session.user?.name || 'Dashboard'}
+                </Link>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => signOut()}
+                  className={`
+                    ${scrolled 
+                      ? 'text-gray-700 hover:text-red-600' 
+                      : 'text-white hover:text-red-300'
+                    }
+                  `}
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link 
+                  href="/auth/signin"
+                  className={`
+                    inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors
+                    ${scrolled 
+                      ? 'text-gray-700 hover:text-orange-600 hover:bg-gray-100' 
+                      : 'text-white hover:text-orange-300 hover:bg-white/10'
+                    }
+                  `}
+                >
+                  <User className="w-4 h-4 mr-2" />
+                  Masuk
+                </Link>
+                <Link 
+                  href="/auth/signup"
+                  className="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg bg-orange-500 hover:bg-orange-600 text-white transition-colors"
+                >
+                  <ShoppingBag className="w-4 h-4 mr-2" />
+                  Daftar
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -233,25 +277,55 @@ export const Navigation: React.FC = () => {
                 </motion.button>
               ))}
               
-              {/* Mobile CTA */}
+              {/* Mobile Auth */}
               <div className="pt-4 border-t border-gray-200 space-y-3">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => scrollToSection('#contact')}
-                  className="w-full justify-center"
-                >
-                  <Phone className="w-4 h-4 mr-2" />
-                  Call Manager Brian
-                </Button>
-                                 <Button
-                   size="sm"
-                   onClick={() => scrollToSection('#subscription')}
-                   className="w-full bg-orange-500 hover:bg-orange-600 text-white justify-center"
-                 >
-                   <ShoppingBag className="w-4 h-4 mr-2" />
-                   Order Now
-                 </Button>
+                {status === 'loading' ? (
+                  <div className="flex justify-center">
+                    <div className="w-8 h-8 animate-spin rounded-full border-2 border-orange-500 border-t-transparent" />
+                  </div>
+                ) : session ? (
+                  <>
+                    <Link 
+                      href="/dashboard"
+                      className="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-gray-700 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <User className="w-4 h-4 mr-2" />
+                      {session.user?.name || 'Dashboard'}
+                    </Link>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        signOut()
+                        setIsOpen(false)
+                      }}
+                      className="w-full justify-center text-red-600 border-red-200 hover:bg-red-50"
+                    >
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Logout
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Link 
+                      href="/auth/signin"
+                      className="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-gray-700 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <User className="w-4 h-4 mr-2" />
+                      Masuk
+                    </Link>
+                    <Link 
+                      href="/auth/signup"
+                      className="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white bg-orange-500 rounded-lg hover:bg-orange-600 transition-colors"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <ShoppingBag className="w-4 h-4 mr-2" />
+                      Daftar
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </motion.div>
