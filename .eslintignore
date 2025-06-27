@@ -1,0 +1,21 @@
+# Generated files
+src/generated/**
+**/generated/**
+**/prisma/generated/**
+
+# Next.js build output
+.next/**
+out/**
+dist/**
+
+# Node modules
+node_modules/**
+
+# Prisma specific
+**/edge.js
+**/runtime/**
+**/*.generated.*
+
+# Build artifacts
+*.tsbuildinfo
+next-env.d.ts 

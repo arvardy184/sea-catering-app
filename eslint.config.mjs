@@ -10,21 +10,22 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
+  // Ignore patterns first
+  {
+    ignores: [
+      "**/generated/**",
+      "src/generated/**",
+      "**/prisma/generated/**",
+      "**/node_modules/**",
+      ".next/**", 
+      "out/**",
+      "dist/**",
+      "**/*.generated.*",
+      "**/edge.js",
+      "**/runtime/**"
+    ]
+  },
   ...compat.extends("next/core-web-vitals", "next/typescript"),
-  rules,
 ];
-
-const rules = {
-  "no-unused-vars": [
-    "error",
-    {
-      vars: "all",
-      args: "after-used",
-      caughtErrors: "all",
-      ignoreRestSiblings: false,
-      reportUsedIgnorePattern: false,
-    },
-  ],
-};
 
 export default eslintConfig;
