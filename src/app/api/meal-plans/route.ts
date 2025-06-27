@@ -44,8 +44,8 @@ export async function GET(request: NextRequest) {
       data: parsedMealPlans,
     });
 
-  } catch (error) {
-    console.error("Error fetching meal plans:", error);
+  } catch (err) {
+    console.error("Error fetching meal plans:", err);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -109,8 +109,8 @@ export async function POST(request: NextRequest) {
       data: mealPlan,
     });
 
-  } catch (error) {
-    console.error("Error creating meal plan:", error);
+  } catch (err) {
+    console.error("Error creating meal plan:", err);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

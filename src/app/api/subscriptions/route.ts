@@ -33,8 +33,8 @@ export async function POST(request: NextRequest) {
       data: subscription,
     });
 
-  } catch (error) {
-    console.error("Error creating subscription:", error);
+  } catch (err) {
+    console.error("Error creating subscription:", err);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -63,8 +63,8 @@ export async function GET() {
       data: parsedSubscriptions,
     });
 
-  } catch (error) {
-    console.error("Error fetching subscriptions:", error);
+  } catch (err) {
+    console.error("Error fetching subscriptions:", err);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

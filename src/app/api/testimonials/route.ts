@@ -39,8 +39,8 @@ export async function POST(request: NextRequest) {
       data: testimonial,
     });
 
-  } catch (error) {
-    console.error("Error creating testimonial:", error);
+  } catch (err) {
+    console.error("Error creating testimonial:", err);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -66,8 +66,8 @@ export async function GET() {
       data: testimonials,
     });
 
-  } catch (error) {
-    console.error("Error fetching testimonials:", error);
+  } catch (err) {
+    console.error("Error fetching testimonials:", err);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

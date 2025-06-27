@@ -52,12 +52,12 @@ export async function POST(request: NextRequest) {
         timestamp: new Date().toISOString(),
       },
     });
-  } catch (error) {
-    console.error("Error processing contact form:", error);
+  } catch (err) {
+    console.error("Error processing contact form:", err);
     return NextResponse.json(
       {
         error: "Internal server error",
-        details: error instanceof Error ? error.message : "Unknown error",
+        details: err instanceof Error ? err.message : "Unknown error",
       },
       { status: 500 }
     );
