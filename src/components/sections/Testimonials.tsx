@@ -480,7 +480,7 @@ export const Testimonials: React.FC = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
           viewport={{ once: true }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 pt-16 border-t border-gray-200"
+          className="grid grid-cols-2 sm:grid-cols-4 gap-6 md:gap-8 mt-16 pt-16 border-t border-gray-200"
         >
           {[
             { label: "Total Reviews", value: "2,394" },

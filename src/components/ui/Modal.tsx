@@ -55,7 +55,7 @@ export const MealPlanModal: React.FC<ModalProps> = ({ isOpen, onClose, mealPlan 
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", duration: 0.5 }}
-            className="fixed inset-4 md:inset-8 lg:inset-16 bg-white rounded-2xl shadow-2xl z-50 overflow-hidden"
+            className="fixed inset-2 sm:inset-4 md:inset-8 lg:inset-16 bg-white rounded-2xl shadow-2xl z-50 overflow-hidden"
           >
             <div className="flex flex-col h-full">
               
@@ -99,8 +99,8 @@ export const MealPlanModal: React.FC<ModalProps> = ({ isOpen, onClose, mealPlan 
               </div>
 
               {/* Content */}
-              <div className="flex-1 overflow-y-auto p-6">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
                   
                   {/* Left Column */}
                   <div className="space-y-6">
@@ -158,7 +158,7 @@ export const MealPlanModal: React.FC<ModalProps> = ({ isOpen, onClose, mealPlan 
                           <Leaf className="w-5 h-5 text-green-500" />
                           Informasi Nutrisi
                         </h3>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 gap-3 sm:gap-4">
                           <div className="bg-red-50 rounded-lg p-4 text-center">
                             <div className="text-2xl font-bold text-red-600">
                               {mealPlan.nutritionInfo.protein}g
