@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -14,22 +8,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model Account {
   id                String  @id @default(cuid())
   userId            String  @map("user_id")
   type              String
   provider          String
   providerAccountId String  @map("provider_account_id")
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
   @@map("accounts")
@@ -46,23 +38,21 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String         @id @default(cuid())
   name          String?
-  email         String    @unique
-  password      String?   // For credentials login
-  emailVerified DateTime? @map("email_verified")
+  email         String         @unique
+  password      String?
+  emailVerified DateTime?      @map("email_verified")
   image         String?
-  role          Role      @default(USER)
+  role          Role           @default(USER)
   phone         String?
   address       String?
-  
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
   accounts      Account[]
   sessions      Session[]
   subscriptions Subscription[]
   testimonials  Testimonial[]
-  
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
 
   @@map("users")
 }
@@ -76,70 +66,63 @@ model VerificationToken {
   @@map("verificationtokens")
 }
 
-enum Role {
-  USER
-  ADMIN
-}
-
-// Business Models
 model Subscription {
   id           String   @id @default(cuid())
-  userId       String?  @map("user_id") // Optional for guest orders
   name         String
   phone        String
-  plan         String   // 'diet' | 'protein' | 'royal'
-  mealTypes    String   // JSON string array
-  deliveryDays String   // JSON string array
+  plan         String
+  mealTypes    String
+  deliveryDays String
   allergies    String?
   totalPrice   Float
   status       String   @default("active")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-
-  user User? @relation(fields: [userId], references: [id])
+  userId       String?  @map("user_id")
+  user         User?    @relation(fields: [userId], references: [id])
 
   @@map("subscriptions")
 }
 
 model MealPlan {
-  id           String  @id @default(cuid())
-  name         String
-  category     String
-  description  String
-  price        Float
-  calories     Int
-  cookingTime  String
-  rating       Float   @default(4.5)
-  tags         String  // JSON string array
-  popular      Boolean @default(false)
-  
-  // Nutrition info
-  protein      Float?
-  carbs        Float?
-  fats         Float?
-  fiber        Float?
-  
-  ingredients  String? // JSON string array
-  allergens    String? // JSON string array
-  
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id          String   @id @default(cuid())
+  name        String
+  category    String
+  description String
+  price       Float
+  calories    Int
+  cookingTime String
+  rating      Float    @default(4.5)
+  tags        String
+  popular     Boolean  @default(false)
+  protein     Float?
+  carbs       Float?
+  fats        Float?
+  fiber       Float?
+  ingredients String?
+  allergens   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@map("meal_plans")
 }
 
 model Testimonial {
   id        String   @id @default(cuid())
-  userId    String?  @map("user_id") // Optional for guest testimonials
   name      String
   message   String
-  rating    Int      // 1-5
+  rating    Int
   location  String?
   approved  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  user User? @relation(fields: [userId], references: [id])
+  userId    String?  @map("user_id")
+  user      User?    @relation(fields: [userId], references: [id])
 
   @@map("testimonials")
+}
+
+enum Role {
+  USER
+  ADMIN
 }
