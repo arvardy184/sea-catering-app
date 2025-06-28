@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Map } from '@/components/ui/Map';
+import { useToast } from '@/components/ui/Toast';
 import { 
   Phone, 
   Mail, 
@@ -60,6 +62,7 @@ const socialMedia = [
 ];
 
 export const Contact: React.FC = () => {
+  const { showToast } = useToast();
   const [formData, setFormData] = useState<ContactForm>({
     name: '',
     email: '',
@@ -125,11 +128,11 @@ export const Contact: React.FC = () => {
           });
         }, 5000);
       } else {
-        alert(`❌ Error: ${result.error || 'Gagal mengirim pesan'}`);
+        showToast(`Error: ${result.error || 'Gagal mengirim pesan'}`, 'error');
       }
     } catch (error) {
       console.error('Error submitting contact form:', error);
-      alert('❌ Terjadi kesalahan. Silakan coba lagi.');
+      showToast('Terjadi kesalahan. Silakan coba lagi.', 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -358,18 +361,20 @@ export const Contact: React.FC = () => {
               ))}
             </div>
 
-            {/* Map Placeholder */}
+            {/* Interactive Map */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
               viewport={{ once: true }}
-              className="bg-gray-100 rounded-2xl h-64 flex items-center justify-center"
             >
-              <div className="text-center">
-                <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                <p className="text-gray-500">Map Placeholder</p>
-              </div>
+              <Map 
+                height="256px"
+                center={[-6.2088, 106.8456]}
+                zoom={12}
+                markerPosition={[-6.2088, 106.8456]}
+                markerText="SEA Catering"
+              />
             </motion.div>
 
             {/* Social Media */}

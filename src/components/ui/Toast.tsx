@@ -1,21 +1,39 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, createContext, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, XCircle, Info, X } from 'lucide-react';
 
-interface ToastProps {
+interface Toast {
+  id: number;
   message: string;
   type: 'success' | 'error' | 'info';
-  onClose: () => void;
-  duration?: number;
 }
 
-export const Toast: React.FC<ToastProps> = ({ message, type, onClose, duration = 5000 }) => {
+interface ToastContextType {
+  showToast: (message: string, type: 'success' | 'error' | 'info') => void;
+}
+
+const ToastContext = createContext<ToastContextType | null>(null);
+
+export const useToast = () => {
+  const context = useContext(ToastContext);
+  if (!context) {
+    throw new Error('useToast must be used within ToastProvider');
+  }
+  return context;
+};
+
+interface ToastItemProps {
+  toast: Toast;
+  onRemove: (id: number) => void;
+}
+
+const ToastItem: React.FC<ToastItemProps> = ({ toast, onRemove }) => {
   useEffect(() => {
-    const timer = setTimeout(onClose, duration);
+    const timer = setTimeout(() => onRemove(toast.id), 5000);
     return () => clearTimeout(timer);
-  }, [onClose, duration]);
+  }, [toast.id, onRemove]);
 
   const icons = {
     success: <CheckCircle className="w-5 h-5 text-green-600" />,
@@ -35,17 +53,17 @@ export const Toast: React.FC<ToastProps> = ({ message, type, onClose, duration =
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -50, scale: 0.95 }}
       className={`
-        fixed top-4 right-4 z-50 max-w-md p-4 rounded-lg border shadow-lg
-        ${colors[type]}
+        max-w-md p-4 rounded-lg border shadow-lg
+        ${colors[toast.type]}
       `}
     >
       <div className="flex items-start gap-3">
-        {icons[type]}
+        {icons[toast.type]}
         <div className="flex-1">
-          <p className="text-sm font-medium">{message}</p>
+          <p className="text-sm font-medium">{toast.message}</p>
         </div>
         <button
-          onClick={onClose}
+          onClick={() => onRemove(toast.id)}
           className="text-gray-400 hover:text-gray-600 transition-colors"
         >
           <X className="w-4 h-4" />
@@ -55,15 +73,8 @@ export const Toast: React.FC<ToastProps> = ({ message, type, onClose, duration =
   );
 };
 
-// Toast Provider
-interface ToastContextType {
-  showToast: (message: string, type: 'success' | 'error' | 'info') => void;
-}
-
-const ToastContext = React.createContext<ToastContextType | null>(null);
-
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [toasts, setToasts] = useState<Array<{ id: number; message: string; type: 'success' | 'error' | 'info' }>>([]);
+  const [toasts, setToasts] = useState<Toast[]>([]);
 
   const showToast = (message: string, type: 'success' | 'error' | 'info') => {
     const id = Date.now();
@@ -77,24 +88,17 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
-      <AnimatePresence>
-        {toasts.map((toast) => (
-          <Toast
-            key={toast.id}
-            message={toast.message}
-            type={toast.type}
-            onClose={() => removeToast(toast.id)}
-          />
-        ))}
-      </AnimatePresence>
+      <div className="fixed top-4 right-4 z-50 space-y-2">
+        <AnimatePresence>
+          {toasts.map((toast) => (
+            <ToastItem
+              key={toast.id}
+              toast={toast}
+              onRemove={removeToast}
+            />
+          ))}
+        </AnimatePresence>
+      </div>
     </ToastContext.Provider>
   );
-};
-
-export const useToast = () => {
-  const context = React.useContext(ToastContext);
-  if (!context) {
-    throw new Error('useToast must be used within ToastProvider');
-  }
-  return context;
 }; 

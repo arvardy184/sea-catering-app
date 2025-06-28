@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { Navigation } from "@/components/ui/Navigation";
 import SessionProvider from "@/components/providers/SessionProvider";
+import { ToastProvider } from "@/components/ui/Toast";
 import "./globals.css";
 
 const inter = Inter({
@@ -62,10 +63,12 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <SessionProvider>
-          <div suppressHydrationWarning>
-            <Navigation />
-            {children}
-          </div>
+          <ToastProvider>
+            <div suppressHydrationWarning>
+              <Navigation />
+              {children}
+            </div>
+          </ToastProvider>
         </SessionProvider>
       </body>
     </html>
