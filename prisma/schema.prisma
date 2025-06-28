@@ -75,7 +75,11 @@ model Subscription {
   deliveryDays String
   allergies    String?
   totalPrice   Float
-  status       String   @default("active")
+  status       String   @default("active") // active, paused, cancelled
+  pauseStart   DateTime?
+  pauseEnd     DateTime?
+  cancelledAt  DateTime?
+  reactivatedAt DateTime?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   userId       String?  @map("user_id")

@@ -1,9 +1,28 @@
 import { PrismaClient } from '../src/generated/prisma';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log('🌱 Starting database seed...');
+
+  // Create admin user
+  console.log('👤 Creating admin user...');
+  
+  const adminPassword = await bcrypt.hash('admin123!', 12);
+  
+  const adminUser = await prisma.user.upsert({
+    where: { email: 'admin@seacatering.com' },
+    update: {},
+    create: {
+      email: 'admin@seacatering.com',
+      name: 'SEA Catering Admin',
+      password: adminPassword,
+      role: 'ADMIN',
+    },
+  });
+
+  console.log(`✅ Created admin user: ${adminUser.email}`);
 
   // Create sample meal plans
   console.log('📋 Creating meal plans...');
