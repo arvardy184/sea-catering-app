@@ -26,7 +26,7 @@ const contactInfo = [
   {
     icon: Phone,
     title: "Telepon",
-    info: "+62 811-8888-SEA",
+    info: process.env.NEXT_PUBLIC_PHONE || "+62 812-3456-789",
     description: "Senin - Minggu, 06:00 - 22:00",
     color: "text-green-600",
     bgColor: "bg-green-50"
@@ -34,7 +34,7 @@ const contactInfo = [
   {
     icon: Mail,
     title: "Email", 
-    info: "hello@seacatering.id",
+    info: process.env.NEXT_PUBLIC_EMAIL || "hello@seacatering.com",
     description: "Respon dalam 2 jam",
     color: "text-blue-600",
     bgColor: "bg-blue-50"
@@ -50,7 +50,11 @@ const contactInfo = [
 ];
 
 const socialMedia = [
-  { icon: Instagram, name: "@seacatering.id", link: "#" },
+  { 
+    icon: Instagram, 
+    name: process.env.NEXT_PUBLIC_INSTAGRAM || "@seacatering", 
+    link: process.env.NEXT_PUBLIC_INSTAGRAM_URL || "https://instagram.com/seacatering" 
+  },
   { icon: Facebook, name: "SEA Catering", link: "#" },
   { icon: Twitter, name: "@seacatering", link: "#" }
 ];

@@ -226,10 +226,26 @@ export const Hero: React.FC = () => {
               style={{ y: y1 }}
               className="relative z-10"
             >
-              <div className="w-full h-[500px] bg-gradient-to-br from-orange-100 to-green-100 rounded-3xl shadow-2xl overflow-hidden">
-                {/* Placeholder for main food image */}
-                <div className="w-full h-full flex items-center justify-center">
-                  <span className="text-gray-400 text-xl">Main Food Image</span>
+              <div className="w-full h-full bg-gradient-to-br from-orange-100 to-green-100 rounded-3xl overflow-hidden">
+                <img 
+                  src="/images/food.png" 
+                  alt="Healthy meal from SEA Catering"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    if (target.nextElementSibling) {
+                      (target.nextElementSibling as HTMLElement).style.display = 'flex';
+                    }
+                  }}
+                />
+                <div className="hidden w-full h-full items-center justify-center">
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <ChefHat className="w-8 h-8 text-white" />
+                    </div>
+                    <span className="text-white text-xl font-medium">Healthy Meal Preview</span>
+                  </div>
                 </div>
               </div>
             </motion.div>
