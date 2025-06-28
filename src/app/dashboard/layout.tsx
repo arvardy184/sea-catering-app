@@ -1,4 +1,4 @@
-import { SessionProvider } from '@/components/providers/SessionProvider';
+import SessionProvider from '@/components/providers/SessionProvider';
 
 export default function DashboardLayout({
   children,
