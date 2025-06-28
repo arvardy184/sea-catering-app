@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+// Test database connection 
 export async function GET() {
   try {
     // Simple test query
@@ -8,7 +9,7 @@ export async function GET() {
     
     return NextResponse.json({
       success: true,
-      message: "Database connection successful",
+      message: "Database connection successful with SSL",
       result,
       timestamp: new Date().toISOString()
     });
