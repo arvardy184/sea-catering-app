@@ -13,6 +13,7 @@ export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const [retryCount, setRetryCount] = useState(0)
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -28,15 +29,40 @@ export default function SignInForm() {
       })
 
       if (result?.error) {
-        setError("Email atau password salah")
+        // If this is the first attempt and it's an admin login, try once more
+        if (retryCount === 0 && email === "admin@seacatering.com") {
+          console.log("First attempt failed for admin, retrying...")
+          setRetryCount(1)
+          
+          // Wait a bit before retry to allow DB connection to establish
+          await new Promise(resolve => setTimeout(resolve, 1000))
+          
+          const retryResult = await signIn("credentials", {
+            email,
+            password,
+            redirect: false,
+          })
+          
+          if (retryResult?.error) {
+            setError("Email atau password salah. Jika masalah berlanjut, coba refresh halaman.")
+          } else {
+            // Success on retry
+            await getSession()
+            router.push("/dashboard")
+            router.refresh()
+          }
+        } else {
+          setError("Email atau password salah. Jika masalah berlanjut, coba refresh halaman.")
+        }
       } else {
-        // Refresh session and redirect
+        // Success on first attempt
         await getSession()
         router.push("/dashboard")
         router.refresh()
       }
     } catch (error) {
-      setError(`Terjadi kesalahan, coba lagi: ${error}`)
+      console.error("Login error:", error)
+      setError(`Terjadi kesalahan koneksi. Coba refresh halaman dan login kembali.`)
     } finally {
       setIsLoading(false)
     }
@@ -56,6 +82,11 @@ export default function SignInForm() {
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
           {error}
+          {retryCount > 0 && (
+            <p className="text-sm mt-2 text-red-600">
+              💡 Tip: Coba refresh halaman (F5) dan login kembali jika masalah berlanjut.
+            </p>
+          )}
         </div>
       )}
 
