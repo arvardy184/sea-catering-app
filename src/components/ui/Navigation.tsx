@@ -72,8 +72,8 @@ export const Navigation: React.FC = () => {
     setIsOpen(false);
   };
 
-  // Don't show navigation on auth pages
-  if (pathname?.startsWith('/auth')) {
+  // Don't show navigation on auth and dashboard pages
+  if (pathname?.startsWith('/auth') || pathname?.startsWith('/dashboard')) {
     return null;
   }
 
