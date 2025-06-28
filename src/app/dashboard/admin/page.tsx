@@ -53,8 +53,8 @@ export default function AdminDashboard() {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [dateRange, setDateRange] = useState({
-    startDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
-    endDate: new Date().toISOString().split('T')[0]
+    startDate: '',
+    endDate: ''
   });
   const [metrics, setMetrics] = useState<DashboardMetrics>({
     newSubscriptions: 0,
@@ -88,6 +88,16 @@ export default function AdminDashboard() {
   useEffect(() => {
     calculateMetrics();
   }, [subscriptions, dateRange]);
+
+  useEffect(() => {
+    // Set dates after component mounts to prevent hydration mismatch
+    const now = new Date();
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+    setDateRange({
+      startDate: firstDay.toISOString().split('T')[0],
+      endDate: now.toISOString().split('T')[0]
+    });
+  }, []);
 
   const fetchSubscriptions = async () => {
     try {
