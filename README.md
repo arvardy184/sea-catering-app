@@ -46,9 +46,9 @@ Proyek ini dikembangkan dalam 5 level progresif:
 - [ ] Proteksi XSS, SQL Injection, CSRF
 
 ### 👥 Level 5: User & Admin Dashboard
-- [ ] Dashboard pengguna untuk manage subscription
-- [ ] Dashboard admin dengan metrics bisnis
-- [ ] Analytics dan reporting
+- [x] Dashboard pengguna untuk manage subscription
+- [x] Dashboard admin dengan metrics bisnis  
+- [x] Analytics dan reporting
 
 ## 🚀 Quick Start
 
@@ -100,8 +100,45 @@ npm run dev
 yarn dev
 ```
 
-5. **Open browser**
+5. **Setup database (optional)**
+```bash
+npx prisma db push
+npx prisma db seed
+```
+
+6. **Open browser**
 Buka [http://localhost:3000](http://localhost:3000) untuk melihat aplikasi.
+
+## 👤 Admin Access
+
+Untuk mengakses Admin Dashboard:
+
+1. **Login sebagai Admin**
+   - Email: `admin@seacatering.com`  
+   - Password: `admin123!`
+
+2. **Akses Dashboard**
+   - Setelah login, klik "Dashboard" di navigation
+   - Akan otomatis redirect ke Admin Dashboard jika role = ADMIN
+
+3. **Fitur Admin Dashboard**
+   - 📊 Business metrics (New Subscriptions, MRR, Reactivations)
+   - 📅 Date range filtering
+   - 📈 Subscription growth analytics
+   - 📋 Recent subscriptions table
+   - 📤 Export data to CSV
+
+## 🔐 User Dashboard
+
+Untuk User Dashboard:
+
+1. **Register/Login** sebagai user biasa
+2. **Akses Dashboard** - akan redirect ke User Dashboard
+3. **Fitur User Dashboard**
+   - 👀 View active subscriptions
+   - ⏸️ Pause subscription dengan date range
+   - ❌ Cancel subscription dengan konfirmasi
+   - ▶️ Reactivate paused/cancelled subscriptions
 
 ## 🛠️ Tech Stack
 
