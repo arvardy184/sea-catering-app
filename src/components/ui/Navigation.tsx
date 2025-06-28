@@ -62,14 +62,27 @@ export const Navigation: React.FC = () => {
   }, [mounted]);
 
   const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId.replace('#', ''));
-    if (element) {
-      element.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
-      });
+    try {
+      const element = document.getElementById(sectionId.replace('#', ''));
+      if (element) {
+        // Close mobile menu first
+        setIsOpen(false);
+        
+        // Add a small delay to ensure menu closes before scrolling
+        setTimeout(() => {
+          element.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }, 100);
+      } else {
+        console.warn(`Section ${sectionId} not found`);
+      }
+    } catch (error) {
+      console.error('Error scrolling to section:', error);
+      // Fallback: just close the menu
+      setIsOpen(false);
     }
-    setIsOpen(false);
   };
 
   // Don't show navigation on auth and dashboard pages

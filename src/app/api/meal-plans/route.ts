@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { prisma, ensureDbConnection } from "@/lib/prisma";
 
 export async function GET(request: NextRequest) {
   try {
+    // Ensure database connection before proceeding
+    await ensureDbConnection();
+    
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');
     const popular = searchParams.get('popular');
@@ -55,6 +58,9 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Ensure database connection before proceeding
+    await ensureDbConnection();
+    
     const body = await request.json();
     const { 
       name, 

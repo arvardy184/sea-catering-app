@@ -35,10 +35,10 @@ const Popup = dynamic(
 // Create a separate component for the actual map content
 const MapContent: React.FC<MapProps> = ({
   height = "256px",
-  center = [-6.3703237, 106.8244792], // Jakarta coordinates
-  zoom = 12,
-  markerPosition = [-6.3703237, 106.8244792],
-  markerText = "SEA Catering - Jakarta Selatan"
+  center = [-6.3619, 106.8250], // Universitas Indonesia coordinates
+  zoom = 15,
+  markerPosition = [-6.3619, 106.8250],
+  markerText = "SEA Catering - Universitas Indonesia"
 }) => {
   const [isReady, setIsReady] = useState(false);
 
@@ -93,7 +93,7 @@ const MapContent: React.FC<MapProps> = ({
             <div className="text-center">
               <strong>{markerText}</strong>
               <br />
-              Melayani area Jakarta dan sekitarnya
+              Melayani area Depok dan Jakarta Selatan
             </div>
           </Popup>
         </Marker>

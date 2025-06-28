@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { prisma, ensureDbConnection } from "@/lib/prisma";
 
 export async function POST(request: NextRequest) {
   try {
+    // Ensure database connection before proceeding
+    await ensureDbConnection();
+    
     const body = await request.json();
     const { name, message, rating, location } = body;
 
@@ -50,6 +53,9 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   try {
+    // Ensure database connection before proceeding
+    await ensureDbConnection();
+    
     // Only fetch approved testimonials for public display
     const testimonials = await prisma.testimonial.findMany({
       where: {
