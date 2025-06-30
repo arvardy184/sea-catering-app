@@ -65,26 +65,101 @@ model VerificationToken {
   @@map("verificationtokens")
 }
 
+// New Plan table to eliminate hardcoded values
+model Plan {
+  id            String         @id @default(cuid())
+  name          String         @unique
+  slug          String         @unique
+  description   String
+  basePrice     Float
+  features      String         // JSON array of features
+  color         String         // CSS gradient classes
+  isActive      Boolean        @default(true)
+  sortOrder     Int            @default(0)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  subscriptions Subscription[]
+
+  @@map("plans")
+}
+
+// New MealType table for better structure
+model MealType {
+  id               String                    @id @default(cuid())
+  name             String                    @unique
+  slug             String                    @unique
+  icon             String
+  timeRange        String
+  isActive         Boolean                   @default(true)
+  sortOrder        Int                       @default(0)
+  createdAt        DateTime                  @default(now())
+  updatedAt        DateTime                  @updatedAt
+  subscriptionMeals SubscriptionMealType[]
+
+  @@map("meal_types")
+}
+
+// New DeliveryDay table
+model DeliveryDay {
+  id                     String                       @id @default(cuid())
+  name                   String                       @unique
+  slug                   String                       @unique
+  dayOfWeek              Int                          // 0-6 (Sunday-Saturday)
+  isActive               Boolean                      @default(true)
+  createdAt              DateTime                     @default(now())
+  updatedAt              DateTime                     @updatedAt
+  subscriptionDeliveries SubscriptionDeliveryDay[]
+
+  @@map("delivery_days")
+}
+
 model Subscription {
-  id           String   @id @default(cuid())
-  name         String
-  phone        String
-  plan         String
-  mealTypes    String
-  deliveryDays String
-  allergies    String?
-  totalPrice   Float
-  status       String   @default("active") // active, paused, cancelled
-  pauseStart   DateTime?
-  pauseEnd     DateTime?
-  cancelledAt  DateTime?
+  id            String                       @id @default(cuid())
+  name          String
+  phone         String
+  planId        String                       @map("plan_id")
+  allergies     String?
+  totalPrice    Float
+  status        SubscriptionStatus           @default(ACTIVE)
+  pauseStart    DateTime?
+  pauseEnd      DateTime?
+  cancelledAt   DateTime?
   reactivatedAt DateTime?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  userId       String?  @map("user_id")
-  user         User?    @relation(fields: [userId], references: [id])
+  createdAt     DateTime                     @default(now())
+  updatedAt     DateTime                     @updatedAt
+  userId        String?                      @map("user_id")
+  
+  // Relations
+  user          User?                        @relation(fields: [userId], references: [id])
+  plan          Plan                         @relation(fields: [planId], references: [id])
+  mealTypes     SubscriptionMealType[]
+  deliveryDays  SubscriptionDeliveryDay[]
 
   @@map("subscriptions")
+}
+
+// Junction table for subscription meal types
+model SubscriptionMealType {
+  id             String       @id @default(cuid())
+  subscriptionId String       @map("subscription_id")
+  mealTypeId     String       @map("meal_type_id")
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  mealType       MealType     @relation(fields: [mealTypeId], references: [id])
+
+  @@unique([subscriptionId, mealTypeId])
+  @@map("subscription_meal_types")
+}
+
+// Junction table for subscription delivery days
+model SubscriptionDeliveryDay {
+  id             String       @id @default(cuid())
+  subscriptionId String       @map("subscription_id")
+  deliveryDayId  String       @map("delivery_day_id")
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  deliveryDay    DeliveryDay  @relation(fields: [deliveryDayId], references: [id])
+
+  @@unique([subscriptionId, deliveryDayId])
+  @@map("subscription_delivery_days")
 }
 
 model MealPlan {
@@ -96,18 +171,96 @@ model MealPlan {
   calories    Int
   cookingTime String
   rating      Float    @default(4.5)
-  tags        String
+  tags        MealPlanTag[]
   popular     Boolean  @default(false)
   protein     Float?
   carbs       Float?
   fats        Float?
   fiber       Float?
-  ingredients String?
-  allergens   String?
+  ingredients MealPlanIngredient[]
+  allergens   MealPlanAllergen[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@map("meal_plans")
+}
+
+// Separate Tag table for better relations
+model Tag {
+  id        String        @id @default(cuid())
+  name      String        @unique
+  slug      String        @unique
+  color     String?
+  isActive  Boolean       @default(true)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  mealPlans MealPlanTag[]
+
+  @@map("tags")
+}
+
+// Junction table for meal plan tags
+model MealPlanTag {
+  id         String   @id @default(cuid())
+  mealPlanId String   @map("meal_plan_id")
+  tagId      String   @map("tag_id")
+  mealPlan   MealPlan @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
+  tag        Tag      @relation(fields: [tagId], references: [id])
+
+  @@unique([mealPlanId, tagId])
+  @@map("meal_plan_tags")
+}
+
+// Separate Ingredient table
+model Ingredient {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  category  String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  mealPlans MealPlanIngredient[]
+
+  @@map("ingredients")
+}
+
+// Junction table for meal plan ingredients
+model MealPlanIngredient {
+  id         String     @id @default(cuid())
+  mealPlanId String     @map("meal_plan_id")
+  ingredientId String   @map("ingredient_id")
+  quantity   String?
+  unit       String?
+  mealPlan   MealPlan   @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
+  ingredient Ingredient @relation(fields: [ingredientId], references: [id])
+
+  @@unique([mealPlanId, ingredientId])
+  @@map("meal_plan_ingredients")
+}
+
+// Separate Allergen table
+model Allergen {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  icon      String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  mealPlans MealPlanAllergen[]
+
+  @@map("allergens")
+}
+
+// Junction table for meal plan allergens
+model MealPlanAllergen {
+  id         String   @id @default(cuid())
+  mealPlanId String   @map("meal_plan_id")
+  allergenId String   @map("allergen_id")
+  mealPlan   MealPlan @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
+  allergen   Allergen @relation(fields: [allergenId], references: [id])
+
+  @@unique([mealPlanId, allergenId])
+  @@map("meal_plan_allergens")
 }
 
 model Testimonial {
@@ -128,4 +281,10 @@ model Testimonial {
 enum Role {
   USER
   ADMIN
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAUSED
+  CANCELLED
 }
