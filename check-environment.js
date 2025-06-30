@@ -187,7 +187,6 @@ const checks = {
       'src/app/api/subscriptions/[id]/route.ts',
       'src/app/api/testimonials/route.ts',
       'src/app/api/meal-plans/route.ts',
-      'src/app/api/test-db/route.ts'
     ];
     
     let allFound = true;

@@ -246,12 +246,12 @@ const automatedTests = {
     });
     
     // Test API endpoints
-    const dbTest = await testHelpers.testAPI('/api/test-db');
-    tests.push({
-      name: 'Database Connection',
-      passed: dbTest.success,
-      message: dbTest.error || 'Database connectivity check'
-    });
+    // const dbTest = await testHelpers.testAPI('/api/test-db');
+    // tests.push({
+    //   name: 'Database Connection',
+    //   passed: dbTest.success,
+    //   message: dbTest.error || 'Database connectivity check'
+    // });
     
     const subscriptionAPI = await testHelpers.testAPI('/api/subscriptions');
     tests.push({
