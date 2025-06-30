@@ -187,8 +187,13 @@ async function main() {
 
   // Seed Sample MealPlans
   console.log('🍛 Seeding Sample MealPlans...');
-  const sampleMealPlans = [
-    {
+  
+  // Create sample meal plans with proper relations
+  await prisma.mealPlan.upsert({
+    where: { id: 'sample-meal-1' },
+    update: {},
+    create: {
+      id: 'sample-meal-1',
       name: 'Nasi Ayam Teriyaki',
       category: 'diet',
       description: 'Ayam teriyaki dengan nasi merah dan sayuran segar',
@@ -200,8 +205,14 @@ async function main() {
       fats: 8.1,
       fiber: 6.3,
       popular: true
-    },
-    {
+    }
+  });
+
+  await prisma.mealPlan.upsert({
+    where: { id: 'sample-meal-2' },
+    update: {},
+    create: {
+      id: 'sample-meal-2',
       name: 'Salmon Panggang',
       category: 'protein',
       description: 'Salmon panggang dengan quinoa dan asparagus',
@@ -214,15 +225,9 @@ async function main() {
       fiber: 4.2,
       popular: true
     }
-  ];
+  });
 
-  for (const mealPlan of sampleMealPlans) {
-    await prisma.mealPlan.upsert({
-      where: { name: mealPlan.name },
-      update: mealPlan,
-      create: mealPlan,
-    });
-  }
+  console.log(`✅ Created ${2} sample meal plans`);
 
   console.log('✅ Database seeding completed successfully!');
 }
