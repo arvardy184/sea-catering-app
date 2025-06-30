@@ -33,8 +33,8 @@ export async function GET(request: NextRequest) {
       ],
     });
 
-    // Parse JSON fields for response
-    const parsedMealPlans = mealPlans.map((mealPlan) => ({
+    // Parse JSON fields for response  
+    const parsedMealPlans = mealPlans.map((mealPlan: typeof mealPlans[0]) => ({
       ...mealPlan,
       tags: JSON.parse(mealPlan.tags || '[]'),
       ingredients: JSON.parse(mealPlan.ingredients || '[]'),

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Star, ChevronLeft, ChevronRight, Quote, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { escapeHtml, sanitizeInput } from '@/lib/utils';
 
 interface Testimonial {
   id: number;
@@ -130,41 +131,63 @@ export const Testimonials: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (formData.name.trim() && formData.message.trim()) {
-      setIsSubmitting(true);
-      
-      try {
-        const response = await fetch('/api/testimonials', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            name: formData.name,
-            message: formData.message,
-            rating: formData.rating,
-            location: 'Indonesia'
-          }),
-        });
+    // Input validation and sanitization
+    const sanitizedName = sanitizeInput(formData.name);
+    const sanitizedMessage = sanitizeInput(formData.message);
+    
+    if (!sanitizedName.trim() || !sanitizedMessage.trim()) {
+      alert('❌ Nama dan pesan tidak boleh kosong');
+      return;
+    }
+    
+    if (sanitizedName.length < 2 || sanitizedName.length > 100) {
+      alert('❌ Nama harus antara 2-100 karakter');
+      return;
+    }
+    
+    if (sanitizedMessage.length < 10 || sanitizedMessage.length > 1000) {
+      alert('❌ Pesan harus antara 10-1000 karakter');
+      return;
+    }
+    
+    if (formData.rating < 1 || formData.rating > 5) {
+      alert('❌ Rating harus antara 1-5');
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
+    try {
+      const response = await fetch('/api/testimonials', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: sanitizedName,
+          message: sanitizedMessage,
+          rating: formData.rating,
+          location: 'Indonesia'
+        }),
+      });
 
-        const result = await response.json();
+      const result = await response.json();
 
-        if (response.ok) {
-          alert('🎉 Terima kasih atas review Anda! Review akan ditampilkan setelah dimoderasi.');
-          setFormData({ name: '', message: '', rating: 5 });
-          setShowForm(false);
-          
-          // Optionally refresh testimonials
-          // Note: New testimonial won't show immediately due to approval process
-        } else {
-          alert(`❌ Error: ${result.error || 'Gagal mengirim review'}`);
-        }
-      } catch (error) {
-        console.error('Error submitting testimonial:', error);
-        alert('❌ Terjadi kesalahan. Silakan coba lagi.');
-      } finally {
-        setIsSubmitting(false);
+      if (response.ok) {
+        alert('🎉 Terima kasih atas review Anda! Review akan ditampilkan setelah dimoderasi.');
+        setFormData({ name: '', message: '', rating: 5 });
+        setShowForm(false);
+        
+        // Optionally refresh testimonials
+        // Note: New testimonial won't show immediately due to approval process
+      } else {
+        alert(`❌ Error: ${result.error || 'Gagal mengirim review'}`);
       }
+    } catch (error) {
+      console.error('Error submitting testimonial:', error);
+      alert('❌ Terjadi kesalahan. Silakan coba lagi.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -303,23 +326,18 @@ export const Testimonials: React.FC = () => {
                       
                       {/* Message */}
                       <blockquote className="text-gray-700 text-lg leading-relaxed mb-6">
-                        &quot;{testimonials[currentIndex].message}&quot;
+                        &quot;{escapeHtml(testimonials[currentIndex].message)}&quot;
                       </blockquote>
                       
                       {/* Author */}
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-pink-400 rounded-full flex items-center justify-center">
-                          <span className="text-white font-bold text-lg">
-                            {testimonials[currentIndex].name[0]}
-                          </span>
-                        </div>
+                      <div className="flex items-center justify-between">
                         <div>
-                          <div className="font-semibold text-gray-900">
-                            {testimonials[currentIndex].name}
-                          </div>
-                          <div className="text-sm text-gray-600">
-                            {testimonials[currentIndex].location} • {testimonials[currentIndex].date}
-                          </div>
+                          <p className="font-semibold text-gray-900 text-lg">
+                            {escapeHtml(testimonials[currentIndex].name)}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            {escapeHtml(testimonials[currentIndex].location || 'Indonesia')}
+                          </p>
                         </div>
                       </div>
                     </div>

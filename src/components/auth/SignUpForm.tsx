@@ -5,6 +5,7 @@ import { signIn } from "next-auth/react"
 import { Button } from "@/components/ui/Button"
 import Link from "next/link"
 import { FaGoogle, FaEye, FaEyeSlash, FaCheck } from "react-icons/fa"
+import { sanitizeInput } from "@/lib/utils"
 
 export default function SignUpForm() {
   const [formData, setFormData] = useState({
@@ -22,9 +23,11 @@ export default function SignUpForm() {
 
 
   const passwordValidation = {
-    minLength: formData.password.length >= 6,
+    minLength: formData.password.length >= 8,
     hasNumber: /\d/.test(formData.password),
     hasLetter: /[a-zA-Z]/.test(formData.password),
+    hasUppercase: /[A-Z]/.test(formData.password),
+    hasSpecial: /[!@#$%^&*(),.?":{}|<>]/.test(formData.password),
   }
 
   const isPasswordValid = Object.values(passwordValidation).every(Boolean)
@@ -44,7 +47,7 @@ export default function SignUpForm() {
     setError("")
 
     if (!isPasswordValid) {
-      setError("Password harus memenuhi semua kriteria")
+      setError("Password harus memenuhi semua kriteria keamanan")
       setIsLoading(false)
       return
     }
@@ -62,10 +65,10 @@ export default function SignUpForm() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
+          name: sanitizeInput(formData.name),
+          email: sanitizeInput(formData.email),
           password: formData.password,
-          phone: formData.phone,
+          phone: formData.phone ? sanitizeInput(formData.phone) : null,
         }),
       })
 
@@ -202,7 +205,7 @@ export default function SignUpForm() {
             <div className="mt-2 space-y-1">
               <div className={`flex items-center text-sm ${passwordValidation.minLength ? 'text-emerald-600' : 'text-gray-500'}`}>
                 <FaCheck className={`mr-2 ${passwordValidation.minLength ? '' : 'opacity-30'}`} />
-                Minimal 6 karakter
+                Minimal 8 karakter
               </div>
               <div className={`flex items-center text-sm ${passwordValidation.hasNumber ? 'text-emerald-600' : 'text-gray-500'}`}>
                 <FaCheck className={`mr-2 ${passwordValidation.hasNumber ? '' : 'opacity-30'}`} />
@@ -210,7 +213,15 @@ export default function SignUpForm() {
               </div>
               <div className={`flex items-center text-sm ${passwordValidation.hasLetter ? 'text-emerald-600' : 'text-gray-500'}`}>
                 <FaCheck className={`mr-2 ${passwordValidation.hasLetter ? '' : 'opacity-30'}`} />
-                Mengandung huruf
+                Mengandung huruf kecil
+              </div>
+              <div className={`flex items-center text-sm ${passwordValidation.hasUppercase ? 'text-emerald-600' : 'text-gray-500'}`}>
+                <FaCheck className={`mr-2 ${passwordValidation.hasUppercase ? '' : 'opacity-30'}`} />
+                Mengandung huruf besar
+              </div>
+              <div className={`flex items-center text-sm ${passwordValidation.hasSpecial ? 'text-emerald-600' : 'text-gray-500'}`}>
+                <FaCheck className={`mr-2 ${passwordValidation.hasSpecial ? '' : 'opacity-30'}`} />
+                Mengandung karakter khusus
               </div>
             </div>
           )}

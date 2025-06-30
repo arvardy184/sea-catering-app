@@ -1,28 +1,70 @@
 import { NextRequest, NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
-import { prisma } from "@/lib/prisma"
-import { z } from "zod"
-
-const registerSchema = z.object({
-  name: z.string().min(2, "Nama minimal 2 karakter"),
-  email: z.string().email("Email tidak valid"),
-  password: z.string().min(6, "Password minimal 6 karakter"),
-  phone: z.string().optional(),
-})
+import { prisma, ensureDbConnection } from "@/lib/prisma"
+import { sanitizeInput, validateEmail, validatePhone, validatePassword } from "@/lib/utils"
 
 export async function POST(request: NextRequest) {
   try {
+    // Ensure database connection before proceeding
+    await ensureDbConnection()
+    
     const body = await request.json()
-    const { name, email, password, phone } = registerSchema.parse(body)
+    const { name, email, password, phone } = body
+
+    // Input sanitization
+    const sanitizedName = sanitizeInput(name || '')
+    const sanitizedEmail = sanitizeInput(email || '').toLowerCase()
+    const sanitizedPhone = phone ? sanitizeInput(phone) : null
+
+    // Validation
+    if (!sanitizedName || !sanitizedEmail || !password) {
+      return NextResponse.json(
+        { error: "Missing required fields: name, email, password" },
+        { status: 400 }
+      )
+    }
+
+    // Name validation
+    if (sanitizedName.length < 2 || sanitizedName.length > 100) {
+      return NextResponse.json(
+        { error: "Name must be between 2 and 100 characters" },
+        { status: 400 }
+      )
+    }
+
+    // Email validation
+    if (!validateEmail(sanitizedEmail)) {
+      return NextResponse.json(
+        { error: "Invalid email format" },
+        { status: 400 }
+      )
+    }
+
+    // Password validation
+    const passwordValidation = validatePassword(password)
+    if (!passwordValidation.isValid) {
+      return NextResponse.json(
+        { error: passwordValidation.errors.join(', ') },
+        { status: 400 }
+      )
+    }
+
+    // Phone validation (if provided)
+    if (sanitizedPhone && !validatePhone(sanitizedPhone)) {
+      return NextResponse.json(
+        { error: "Invalid phone number format" },
+        { status: 400 }
+      )
+    }
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
-      where: { email }
+      where: { email: sanitizedEmail }
     })
 
     if (existingUser) {
       return NextResponse.json(
-        { error: "Email sudah terdaftar" },
+        { error: "User with this email already exists" },
         { status: 400 }
       )
     }
@@ -30,38 +72,29 @@ export async function POST(request: NextRequest) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12)
 
-    // Create user
+    // Create user with sanitized data
     const user = await prisma.user.create({
       data: {
-        name,
-        email,
+        name: sanitizedName,
+        email: sanitizedEmail,
         password: hashedPassword,
-        phone,
+        phone: sanitizedPhone,
+        role: "USER",
       },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phone: true,
-        role: true,
-        createdAt: true,
-      }
     })
 
+    // Remove password from response
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _, ...userWithoutPassword } = user
+
     return NextResponse.json({
-      message: "User berhasil dibuat",
-      user
+      success: true,
+      message: "User created successfully",
+      data: userWithoutPassword,
     })
 
   } catch (err) {
-    if (err instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: err.errors[0].message },
-        { status: 400 }
-      )
-    }
-
-    console.error("Registration error:", err)
+    console.error("Error creating user:", err)
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
