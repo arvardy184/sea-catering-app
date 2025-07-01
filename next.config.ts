@@ -1,11 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Enable experimental features for better production performance
-  experimental: {
-    // Reduce memory usage in serverless environments
-    serverComponentsExternalPackages: ['@prisma/client'],
-  },
+  // Reduce memory usage in serverless environments
+  serverExternalPackages: ['@prisma/client'],
   
   // Optimize for production deployment
   ...(process.env.NODE_ENV === 'production' && {
