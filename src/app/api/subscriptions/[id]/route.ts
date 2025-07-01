@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { SubscriptionStatus } from "@prisma/client";
 
 export async function PATCH(
   request: NextRequest,
@@ -19,7 +20,7 @@ export async function PATCH(
 
     let updateData: {
       updatedAt: Date;
-      status?: string;
+      status?: SubscriptionStatus;
       pauseStart?: Date | null;
       pauseEnd?: Date | null;
       cancelledAt?: Date | null;
@@ -38,7 +39,7 @@ export async function PATCH(
         }
         updateData = {
           ...updateData,
-          status: 'paused',
+          status: SubscriptionStatus.PAUSED,
           pauseStart: new Date(pauseStart),
           pauseEnd: new Date(pauseEnd)
         };
@@ -47,7 +48,7 @@ export async function PATCH(
       case 'cancel':
         updateData = {
           ...updateData,
-          status: 'cancelled',
+          status: SubscriptionStatus.CANCELLED,
           cancelledAt: new Date()
         };
         break;
@@ -55,7 +56,7 @@ export async function PATCH(
       case 'reactivate':
         updateData = {
           ...updateData,
-          status: 'active',
+          status: SubscriptionStatus.ACTIVE,
           reactivatedAt: new Date(),
           pauseStart: null,
           pauseEnd: null
@@ -106,6 +107,40 @@ export async function GET(
             name: true,
             email: true
           }
+        },
+        plan: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            description: true,
+            basePrice: true
+          }
+        },
+        mealTypes: {
+          include: {
+            mealType: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                icon: true,
+                timeRange: true
+              }
+            }
+          }
+        },
+        deliveryDays: {
+          include: {
+            deliveryDay: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                dayOfWeek: true
+              }
+            }
+          }
         }
       }
     });
@@ -117,17 +152,18 @@ export async function GET(
       );
     }
 
-    // Parse JSON fields for response
-    const parsedSubscription = {
-      ...subscription,
-      mealTypes: JSON.parse(subscription.mealTypes),
-      deliveryDays: JSON.parse(subscription.deliveryDays),
+    // Transform relational data for response
+    const { mealTypes, deliveryDays, ...subscriptionData } = subscription;
+    const transformedSubscription = {
+      ...subscriptionData,
+      mealTypes: mealTypes.map(mt => mt.mealType),
+      deliveryDays: deliveryDays.map(dd => dd.deliveryDay),
     };
 
     return NextResponse.json({
       success: true,
       message: 'Subscription fetched successfully',
-      data: parsedSubscription,
+      data: transformedSubscription,
     });
 
   } catch (err) {
