@@ -14,22 +14,47 @@ import {
   PieChart,
   Activity,
   Target,
-  Filter,
   Download
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { formatCurrency } from '@/lib/utils';
+import  {formatCurrency } from '@/lib/utils';
+import { ResponsiveContainer, BarChart, XAxis, YAxis, Tooltip, Bar } from 'recharts';
+import { format } from 'date-fns';
 // import { useToast } from '@/components/ui/Toast';
+
+// API response types
+interface Plan {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  basePrice: number;
+}
+
+interface MealType {
+  id: string;
+  name: string;
+  slug: string;
+  icon?: string;
+  timeRange?: string;
+}
+
+interface DeliveryDay {
+  id: string;
+  name: string;
+  slug: string;
+  dayOfWeek: number;
+}
 
 interface Subscription {
   id: string;
   name: string;
   phone: string;
-  plan: string;
-  mealTypes: string[];
-  deliveryDays: string[];
+  plan: Plan;
+  mealTypes: MealType[];
+  deliveryDays: DeliveryDay[];
   allergies?: string;
   totalPrice: number;
   status: string;
@@ -145,7 +170,11 @@ export default function AdminDashboard() {
   const fetchSubscriptions = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('/api/subscriptions');
+      const params = { page: 1, limit: 10 };
+      const url = '/api/subscriptions?' + Object.entries(params)
+        .map(([key, value]) => `${key}=${value}`)
+        .join('&');
+      const response = await fetch(url);
       const result = await response.json();
 
       if (response.ok && result.data) {
@@ -160,10 +189,6 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleDateRangeChange = (field: 'startDate' | 'endDate', value: string) => {
-    setDateRange(prev => ({ ...prev, [field]: value }));
-  };
-
   const exportData = () => {
     const csvContent = [
       ['ID', 'Name', 'Phone', 'Plan', 'Total Price', 'Status', 'Created At'],
@@ -171,7 +196,7 @@ export default function AdminDashboard() {
         sub.id,
         sub.name,
         sub.phone,
-        sub.plan,
+        sub.plan.name,
         sub.totalPrice,
         sub.status,
         sub.createdAt
@@ -186,6 +211,16 @@ export default function AdminDashboard() {
     a.click();
     window.URL.revokeObjectURL(url);
   };
+
+  const growthData = subscriptions.reduce<Record<string, number>>((acc, s) => {
+    const key = format(new Date(s.createdAt), 'yyyy-MM'); // 2025-07
+    acc[key] = (acc[key] || 0) + 1;
+    return acc;
+  }, {});
+  const chartData = Object.entries(growthData).map(([date, count]) => ({
+    date,
+    count
+  }));
 
   if (status === 'loading' || isLoading) {
     return (
@@ -238,43 +273,6 @@ export default function AdminDashboard() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
-        {/* Date Range Selector */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-8"
-        >
-          <Card className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <Filter className="w-5 h-5 text-gray-500" />
-                <h3 className="text-lg font-semibold text-gray-900">Filter Data</h3>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <label className="text-sm font-medium text-gray-700">Dari:</label>
-                  <input
-                    type="date"
-                    value={dateRange.startDate}
-                    onChange={(e) => handleDateRangeChange('startDate', e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  />
-                </div>
-                <div className="flex items-center gap-2">
-                  <label className="text-sm font-medium text-gray-700">Sampai:</label>
-                  <input
-                    type="date"
-                    value={dateRange.endDate}
-                    onChange={(e) => handleDateRangeChange('endDate', e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-            </div>
-          </Card>
-        </motion.div>
-
         {/* Key Metrics */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -420,8 +418,14 @@ export default function AdminDashboard() {
             </div>
             <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
               <div className="text-center">
-                <BarChart3 className="w-12 h-12 text-gray-300 mx-auto mb-2" />
-                <p className="text-gray-500">Chart akan tersedia setelah integrasi charting library</p>
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={chartData}>
+                    <XAxis dataKey="date" />
+                    <YAxis allowDecimals={false} />
+                    <Tooltip />
+                    <Bar dataKey="count" fill="#FF6B35" radius={[4,4,0,0]} />
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
             </div>
           </Card>
@@ -490,7 +494,7 @@ export default function AdminDashboard() {
                       </td>
                       <td className="py-3 px-4">
                         <span className="inline-block bg-orange-100 text-orange-800 px-2 py-1 rounded text-xs font-medium">
-                          {subscription.plan}
+                          {subscription.plan.name}
                         </span>
                       </td>
                       <td className="py-3 px-4 font-medium text-gray-900">
@@ -547,7 +551,6 @@ export default function AdminDashboard() {
                       <th className="text-left py-3 px-4 font-medium text-gray-500">Revenue</th>
                       <th className="text-left py-3 px-4 font-medium text-gray-500">Status</th>
                       <th className="text-left py-3 px-4 font-medium text-gray-500">Date</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-500">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -561,14 +564,14 @@ export default function AdminDashboard() {
                         </td>
                         <td className="py-3 px-4">
                           <span className="inline-block bg-orange-100 text-orange-800 px-2 py-1 rounded text-xs font-medium">
-                            {subscription.plan}
+                            {subscription.plan.name}
                           </span>
                         </td>
                         <td className="py-3 px-4">
                           <div className="flex flex-wrap gap-1">
                             {subscription.mealTypes.map((meal, idx) => (
                               <span key={idx} className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">
-                                {meal}
+                                {meal.name}
                               </span>
                             ))}
                           </div>
@@ -577,7 +580,7 @@ export default function AdminDashboard() {
                           <div className="flex flex-wrap gap-1">
                             {subscription.deliveryDays.slice(0, 3).map((day, idx) => (
                               <span key={idx} className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
-                                {day}
+                                {day.name}
                               </span>
                             ))}
                             {subscription.deliveryDays.length > 3 && (
@@ -603,16 +606,6 @@ export default function AdminDashboard() {
                         </td>
                         <td className="py-3 px-4 text-sm text-gray-500">
                           {new Date(subscription.createdAt).toLocaleDateString('id-ID')}
-                        </td>
-                        <td className="py-3 px-4">
-                          <div className="flex gap-2">
-                            <Button size="sm" variant="outline" className="text-xs">
-                              View
-                            </Button>
-                            <Button size="sm" variant="outline" className="text-xs">
-                              Edit
-                            </Button>
-                          </div>
                         </td>
                       </tr>
                     ))}

@@ -1,7 +1,7 @@
 # 🧪 SEA Catering App - End-to-End Test Cases
 
 ## 📋 Test Environment Setup
-- **URL**: http://localhost:3002
+- **URL**: http://localhost:3000
 - **Browser**: Chrome/Firefox (latest version)
 - **Screen**: Desktop (1920x1080) + Mobile (375x667)
 - **Database**: PostgreSQL connected via Prisma
@@ -14,7 +14,7 @@
 **Objective**: Verify static homepage content displays correctly
 
 **Pre-conditions**: 
-- Navigate to http://localhost:3002
+- Navigate to http://localhost:3000
 
 **Test Steps**:
 1. Check page loads without errors

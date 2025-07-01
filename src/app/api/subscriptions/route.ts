@@ -193,9 +193,7 @@ const getHandler = async (req: AuthenticatedRequest): Promise<NextResponse> => {
     const paginationResult = paginationSchema.safeParse({
       page: searchParams.get('page'),
       limit: searchParams.get('limit'),
-      search: searchParams.get('search'),
-      sortBy: searchParams.get('sortBy'),
-      sortOrder: searchParams.get('sortOrder'),
+     
     });
 
     if (!paginationResult.success) {
@@ -208,7 +206,7 @@ const getHandler = async (req: AuthenticatedRequest): Promise<NextResponse> => {
       );
     }
 
-    const { page, limit, search, sortBy, sortOrder } = paginationResult.data;
+    const { page, limit } = paginationResult.data;
     const skip = (page - 1) * limit;
 
     // Build where clause based on user role
@@ -216,24 +214,12 @@ const getHandler = async (req: AuthenticatedRequest): Promise<NextResponse> => {
     
     if (req.user?.role === 'ADMIN') {
       // Admin can see all subscriptions
-      if (search) {
-        whereClause = {
-          OR: [
-            { name: { contains: search, mode: 'insensitive' } },
-            { phone: { contains: search, mode: 'insensitive' } },
-          ]
-        };
-      }
+     
     } else if (req.user) {
       // Regular users can only see their own subscriptions
       whereClause = {
         userId: req.user.id,
-        ...(search && {
-          OR: [
-            { name: { contains: search, mode: 'insensitive' } },
-            { phone: { contains: search, mode: 'insensitive' } },
-          ]
-        })
+       
       };
     } else {
       // Unauthenticated users cannot access subscriptions
@@ -243,12 +229,7 @@ const getHandler = async (req: AuthenticatedRequest): Promise<NextResponse> => {
       );
     }
 
-    // Build order by clause
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let orderBy: any = { createdAt: sortOrder };
-    if (sortBy) {
-      orderBy = { [sortBy]: sortOrder };
-    }
+
 
     // Fetch subscriptions with relationships
     const [subscriptions, total] = await Promise.all([
@@ -297,7 +278,7 @@ const getHandler = async (req: AuthenticatedRequest): Promise<NextResponse> => {
             }
           } : false,
         },
-        orderBy,
+        orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
       }),
@@ -343,7 +324,8 @@ const getHandler = async (req: AuthenticatedRequest): Promise<NextResponse> => {
 
 // Export handlers with middleware
 export const POST = createApiHandler(postHandler, {
-  rateLimit: { maxRequests: 10, windowMs: 60000 }, // 10 requests per minute
+  auth: { requireAuth: true },             // User must be logged in to create subscription
+  rateLimit: { maxRequests: 50, windowMs: 60000 }, // 50 requests per minute
   csrf: true,
 });
 

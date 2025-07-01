@@ -289,7 +289,7 @@ const manualTestGuide = {
   level1: () => {
     console.log(`
 🎯 LEVEL 1 MANUAL TESTS:
-1. Check homepage loads at http://localhost:3002
+1. Check homepage loads at http://localhost:3000
 2. Verify "SEA Catering" brand appears in header
 3. Verify slogan "Healthy Meals, Anytime, Anywhere" is visible
 4. Check business introduction section

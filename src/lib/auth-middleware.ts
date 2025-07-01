@@ -217,15 +217,19 @@ export function withCSRF(
     }
 
     try {
-      const sessionData = await getSessionFromRequest();
+      // Clone the request so we can read the body
+      const reqClone = req.clone();
+      let body: unknown = {};
       
-      if (!sessionData?.user) {
-        // No session, skip CSRF check for public endpoints
-        return await handler(req);
+      try {
+        body = await reqClone.json();
+      } catch {
+        // If body is not JSON, that's fine for CSRF check
+        body = {};
       }
 
-      const body = await req.json();
-      const csrfToken = body.csrfToken || req.headers.get('x-csrf-token');
+      const sessionData = await getSessionFromRequest();
+      const csrfToken = (body as { csrfToken?: string }).csrfToken || req.headers.get('x-csrf-token');
       
       if (!csrfToken) {
         return NextResponse.json(
@@ -237,9 +241,12 @@ export function withCSRF(
         );
       }
 
-      // In a real app, you'd validate the CSRF token properly
-      // For now, we'll just check if it exists
-      // TODO: Implement proper CSRF token validation
+      // Basic validation: just check if token exists
+      // In production, implement proper CSRF token validation with session
+      if (sessionData?.user) {
+        // For authenticated users, you could do more sophisticated validation
+        // TODO: Implement proper CSRF token validation with user session
+      }
       
       return await handler(req);
     } catch (error) {

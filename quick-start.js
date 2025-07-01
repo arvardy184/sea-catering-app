@@ -39,7 +39,7 @@ DATABASE_URL="postgresql://postgres:YOUR_PASSWORD@db.YOUR_PROJECT.supabase.co:54
 
 # NextAuth Configuration (Required) 
 NEXTAUTH_SECRET="sea-catering-super-secret-key-for-jwt-tokens-make-this-long-and-random-2024"
-NEXTAUTH_URL="http://localhost:3002"
+NEXTAUTH_URL="http://localhost:3000"
 
 # Google OAuth (Optional - for Google sign-in)
 # Get these from Google Cloud Console
@@ -118,7 +118,7 @@ ${COLORS.YELLOW}2. Database Initialization:${COLORS.RESET}
 
 ${COLORS.YELLOW}3. Start Testing:${COLORS.RESET}
    • npm run dev (start development server)
-   • Open http://localhost:3002 in browser
+   • Open http://localhost:3000 in browser
    • Follow END_TO_END_TEST_CASES.md for testing
 
 ${COLORS.BOLD}${COLORS.GREEN}🧪 Quick Test Commands:${COLORS.RESET}
@@ -170,7 +170,7 @@ ${COLORS.BLUE}Setting up environment for end-to-end testing...${COLORS.RESET}
       console.log(`
 ${COLORS.BOLD}${COLORS.GREEN}🧪 Ready to Test:${COLORS.RESET}
    • npm run dev (start development server)
-   • Open http://localhost:3002 in browser
+   • Open http://localhost:3000 in browser
    • Follow END_TO_END_TEST_CASES.md for comprehensive testing
       `);
     }

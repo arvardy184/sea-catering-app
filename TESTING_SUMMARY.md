@@ -28,7 +28,7 @@
 - **Prisma Setup**: Schema configured, client generated successfully  
 - **Environment Variables**: Properly configured (.env.local)
 - **File Structure**: All required files and API routes present
-- **Port Availability**: Ready on localhost:3002
+- **Port Availability**: Ready on localhost:3000
 
 ---
 
@@ -73,7 +73,7 @@
    ```
 
 2. **Open Browser:**
-   - Navigate to http://localhost:3002
+   - Navigate to http://localhost:3000
    - Open DevTools → Console
 
 3. **Load Test Scripts:**
@@ -220,7 +220,7 @@ GOOGLE_CLIENT_SECRET="production-google-secret"
 
 ### **Pre-Testing Setup:**
 - [ ] Environment checker passes (6/6 checks)
-- [ ] Development server running (localhost:3002)
+- [ ] Development server running (localhost:3000)
 - [ ] Browser DevTools open
 - [ ] Test scripts loaded
 

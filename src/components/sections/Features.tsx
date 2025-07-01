@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import React from 'react';
@@ -259,12 +260,19 @@ export const Features: React.FC = () => {
               </motion.button>
             </div>
 
-            {/* Food Image Placeholder */}
+            {/* Food Image */}
             <div className="relative h-full min-h-[300px] lg:min-h-[400px]">
+              <img
+                src="/images/healthy.jpg"
+                alt="Healthy food illustration"
+                className="w-full h-full object-cover rounded-3xl"
+                style={{ minHeight: '300px', maxHeight: '100%' }}
+                onError={e => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                }}
+              />
               <div className="absolute inset-0 bg-gradient-to-l from-transparent to-orange-600"></div>
-              <div className="w-full h-full bg-orange-400/20 flex items-center justify-center">
-                <span className="text-white/50 text-lg">Food Image</span>
-              </div>
             </div>
           </div>
 

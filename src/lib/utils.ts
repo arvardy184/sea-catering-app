@@ -121,4 +121,5 @@ export function validatePassword(password: string): {
     isValid: errors.length === 0,
     errors
   };
-} 
+}
+

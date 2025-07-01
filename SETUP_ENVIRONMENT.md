@@ -17,7 +17,7 @@ DATABASE_URL="postgresql://postgres:YOUR_PASSWORD@db.YOUR_PROJECT.supabase.co:54
 
 # NextAuth Configuration (Required) 
 NEXTAUTH_SECRET="sea-catering-super-secret-key-for-jwt-tokens-make-this-long-and-random-2024"
-NEXTAUTH_URL="http://localhost:3002"
+NEXTAUTH_URL="http://localhost:3000"
 
 # Google OAuth (Optional - for Google sign-in)
 GOOGLE_CLIENT_ID="your-google-client-id"
@@ -80,7 +80,7 @@ The app includes an admin setup endpoint:
 
 ```bash
 # Create admin account via API
-curl -X POST http://localhost:3002/api/admin/setup
+curl -X POST http://localhost:3000/api/admin/setup
 ```
 
 Or login with pre-seeded admin:
@@ -120,7 +120,7 @@ This will verify:
    ```
 
 3. **Open Browser**:
-   - Navigate to http://localhost:3002
+   - Navigate to http://localhost:3000
    - Open DevTools → Console
 
 4. **Load Test Script**:
@@ -144,7 +144,7 @@ This will verify:
 
 ```bash
 # Test database connection
-curl http://localhost:3002/api/test-db
+curl http://localhost:3000/api/test-db
 ```
 
 Expected response:
@@ -158,8 +158,8 @@ Expected response:
 ### Common Issues:
 
 1. **Port 3000 in use**:
-   - App configured for port 3002
-   - Check with: `netstat -an | findstr :3002`
+   - App configured for port 3000
+   - Check with: `netstat -an | findstr :3000`
 
 2. **Prisma client not generated**:
    ```bash

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { formatCurrency } from '@/lib/utils';
 import { useToast } from '@/components/ui/Toast';
+import { useCSRF } from '@/hooks/useCSRF';
 import { 
   Check, 
   Star, 
@@ -77,6 +78,9 @@ export const Subscription: React.FC = () => {
 
   // Toast notifications
   const toast = useToast();
+  
+  // CSRF protection
+  const { csrfToken, isLoading: csrfLoading, error: csrfError } = useCSRF();
 
   // Fetch data from APIs on component mount
   useEffect(() => {
@@ -130,13 +134,26 @@ export const Subscription: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Check CSRF token availability
+    if (csrfError) {
+      toast.error('CSRF error: ' + csrfError);
+      return;
+    }
+    
+    if (!csrfToken) {
+      toast.error('Security token belum siap. Silakan tunggu sebentar.');
+      return;
+    }
+    
     setIsSubmitting(true);
     
     try {
-      const response = await fetch('/api/subscriptions', {
+      const response = await fetch('/api/subscriptions?page=1&limit=10', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken, // Kirim CSRF token di header
         },
         body: JSON.stringify({
           name: formData.name,
@@ -145,6 +162,7 @@ export const Subscription: React.FC = () => {
           mealTypeIds: formData.mealTypeIds,
           deliveryDayIds: formData.deliveryDayIds,
           allergies: formData.allergies,
+          csrfToken, // Kirim juga di body sebagai backup
         }),
       });
 
@@ -197,7 +215,7 @@ export const Subscription: React.FC = () => {
   };
 
   // Show loading state while fetching data
-  if (isLoadingData) {
+  if (isLoadingData || csrfLoading) {
     return (
       <section id="subscription" className="py-20 bg-gradient-to-br from-orange-50 to-green-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

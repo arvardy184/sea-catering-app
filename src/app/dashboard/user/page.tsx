@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
@@ -23,16 +23,40 @@ import { Card } from '@/components/ui/Card';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { formatCurrency } from '@/lib/utils';
 
+// API response nested types
+interface Plan {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  basePrice: number;
+}
+
+interface MealType {
+  id: string;
+  name: string;
+  slug: string;
+  icon?: string;
+  timeRange?: string;
+}
+
+interface DeliveryDay {
+  id: string;
+  name: string;
+  slug: string;
+  dayOfWeek: number;
+}
+
 interface Subscription {
   id: string;
   name: string;
   phone: string;
-  plan: string;
-  mealTypes: string[];
-  deliveryDays: string[];
+  plan: Plan;
+  mealTypes: MealType[];
+  deliveryDays: DeliveryDay[];
   allergies?: string;
   totalPrice: number;
-  status: string;
+  status: 'ACTIVE' | 'PAUSED' | 'CANCELLED';
   createdAt: string;
   updatedAt: string;
 }
@@ -66,6 +90,43 @@ export default function UserDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
+  const fetchSubscriptions = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const params = { page: 1, limit: 10 };
+      const url = '/api/subscriptions?' + Object.entries(params)
+        .map(([key, value]) => `${key}=${value}`)
+        .join('&');
+
+      console.log(url);
+      const response = await fetch(url);
+      
+      const result = await response.json();
+
+      if (response.ok && result.data) {
+        console.log(result.data);
+        setSubscriptions(result.data);
+      } else {
+        // Better error handling
+        console.error('Failed to fetch subscriptions:', result);
+        
+        if (response.status === 401) {
+          // Redirect ke login jika unauthorized
+          router.push('/auth/signin');
+          return;
+        }
+        
+        // Show user-friendly error message
+        alert(`❌ Gagal memuat subscription: ${result.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error fetching subscriptions:', error);
+      alert('❌ Terjadi kesalahan saat memuat data. Silakan coba lagi.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [router]);
+
   useEffect(() => {
     if (status === 'loading') return;
     
@@ -75,26 +136,7 @@ export default function UserDashboard() {
     }
 
     fetchSubscriptions();
-  }, [session, status, router]);
-
-  const fetchSubscriptions = async () => {
-    try {
-      setIsLoading(true);
-      const response = await fetch('/api/subscriptions');
-      const result = await response.json();
-
-      if (response.ok && result.data) {
-        // Filter subscriptions by user (for now, show all since we don't have userId linking)
-        setSubscriptions(result.data);
-      } else {
-        console.error('Failed to fetch subscriptions:', result);
-      }
-    } catch (error) {
-      console.error('Error fetching subscriptions:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  }, [session, status, router, fetchSubscriptions]);
 
   const handlePauseSubscription = async (subscriptionId: string) => {
     const pauseDate = prompt('Masukkan tanggal mulai pause (YYYY-MM-DD):');
@@ -269,7 +311,7 @@ export default function UserDashboard() {
               <div>
                 <p className="text-sm text-gray-600">Active Subscriptions</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {subscriptions.filter(sub => sub.status === 'active').length}
+                  {subscriptions.filter(sub => sub.status === 'ACTIVE').length}
                 </p>
               </div>
             </div>
@@ -283,7 +325,7 @@ export default function UserDashboard() {
               <div>
                 <p className="text-sm text-gray-600">Paused Subscriptions</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {subscriptions.filter(sub => sub.status === 'paused').length}
+                  {subscriptions.filter(sub => sub.status === 'PAUSED').length}
                 </p>
               </div>
             </div>
@@ -299,7 +341,7 @@ export default function UserDashboard() {
                 <p className="text-2xl font-bold text-gray-900">
                   {formatCurrency(
                     subscriptions
-                      .filter(sub => sub.status === 'active')
+                      .filter(sub => sub.status === 'ACTIVE')
                       .reduce((total, sub) => total + sub.totalPrice, 0)
                   )}
                 </p>
@@ -355,18 +397,18 @@ export default function UserDashboard() {
                     <div className="flex items-center justify-between mb-4">
                       <div className={`
                         inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium
-                        ${subscription.status === 'active' 
+                        ${subscription.status === 'ACTIVE' 
                           ? 'bg-green-100 text-green-800' 
-                          : subscription.status === 'paused'
+                          : subscription.status === 'PAUSED'
                           ? 'bg-orange-100 text-orange-800'
                           : 'bg-red-100 text-red-800'
                         }
                       `}>
-                        {subscription.status === 'active' && <CheckCircle className="w-4 h-4" />}
-                        {subscription.status === 'paused' && <Pause className="w-4 h-4" />}
-                        {subscription.status === 'cancelled' && <X className="w-4 h-4" />}
-                        {subscription.status === 'active' ? 'Aktif' : 
-                         subscription.status === 'paused' ? 'Di-pause' : 'Dibatalkan'}
+                        {subscription.status === 'ACTIVE' && <CheckCircle className="w-4 h-4" />}
+                        {subscription.status === 'PAUSED' && <Pause className="w-4 h-4" />}
+                        {subscription.status === 'CANCELLED' && <X className="w-4 h-4" />}
+                        {subscription.status === 'ACTIVE' ? 'Aktif' : 
+                         subscription.status === 'PAUSED' ? 'Di-pause' : 'Dibatalkan'}
                       </div>
                       <span className="text-sm text-gray-500">
                         {new Date(subscription.createdAt).toLocaleDateString('id-ID')}
@@ -377,7 +419,7 @@ export default function UserDashboard() {
                     <div className="space-y-4">
                       <div>
                         <h4 className="text-lg font-bold text-gray-900 mb-2">
-                          {planNames[subscription.plan as keyof typeof planNames]}
+                          {planNames[subscription.plan.slug as keyof typeof planNames] || subscription.plan.name}
                         </h4>
                         <p className="text-2xl font-bold text-orange-600">
                           {formatCurrency(subscription.totalPrice)}
@@ -390,8 +432,8 @@ export default function UserDashboard() {
                           <p className="text-gray-600 mb-1">Jenis Makanan:</p>
                           <div className="space-y-1">
                             {subscription.mealTypes.map((type) => (
-                              <span key={type} className="inline-block bg-gray-100 px-2 py-1 rounded text-xs mr-1">
-                                {mealTypeNames[type as keyof typeof mealTypeNames]}
+                              <span key={type.id} className="inline-block bg-gray-100 px-2 py-1 rounded text-xs mr-1">
+                                {mealTypeNames[type.slug as keyof typeof mealTypeNames] || type.name}
                               </span>
                             ))}
                           </div>
@@ -400,8 +442,8 @@ export default function UserDashboard() {
                           <p className="text-gray-600 mb-1">Hari Pengiriman:</p>
                           <div className="space-y-1">
                             {subscription.deliveryDays.map((day) => (
-                              <span key={day} className="inline-block bg-gray-100 px-2 py-1 rounded text-xs mr-1">
-                                {dayNames[day as keyof typeof dayNames]}
+                              <span key={day.id} className="inline-block bg-gray-100 px-2 py-1 rounded text-xs mr-1">
+                                {dayNames[day.slug as keyof typeof dayNames] || day.name}
                               </span>
                             ))}
                           </div>
@@ -429,7 +471,7 @@ export default function UserDashboard() {
                     {/* Action Buttons */}
                     <div className="mt-6 pt-4 border-t border-gray-200">
                       <div className="flex gap-2">
-                        {subscription.status === 'active' && (
+                        {subscription.status === 'ACTIVE' && (
                           <>
                             <Button
                               variant="outline"
@@ -466,7 +508,7 @@ export default function UserDashboard() {
                           </>
                         )}
                         
-                        {subscription.status === 'paused' && (
+                        {subscription.status === 'PAUSED' && (
                           <Button
                             size="sm"
                             onClick={() => handleReactivateSubscription(subscription.id)}
@@ -484,7 +526,7 @@ export default function UserDashboard() {
                           </Button>
                         )}
 
-                        {subscription.status === 'cancelled' && (
+                        {subscription.status === 'CANCELLED' && (
                           <Button
                             size="sm"
                             onClick={() => handleReactivateSubscription(subscription.id)}

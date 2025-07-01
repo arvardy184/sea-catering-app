@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
         message: sanitizedMessage,
         rating: numericRating,
         location: sanitizedLocation,
-        approved: false, // Default to false for moderation
+        approved: true, // Auto approve
       },
     });
 
@@ -78,11 +78,8 @@ export async function GET() {
     // Ensure database connection before proceeding
     await ensureDbConnection();
     
-    // Only fetch approved testimonials for public display
+    // Fetch all testimonials
     const testimonials = await prisma.testimonial.findMany({
-      where: {
-        approved: true
-      },
       orderBy: {
         createdAt: 'desc'
       },
