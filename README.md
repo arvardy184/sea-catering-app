@@ -23,32 +23,11 @@
 
 Proyek ini dikembangkan dalam 5 level progresif:
 
-### ✅ Level 1: Welcome to SEA Catering! (COMPLETED)
-- [x] Homepage dengan branding SEA Catering
-- [x] Slogan: "Healthy Meals, Anytime, Anywhere"
-- [x] Section perkenalan layanan
-- [x] Daftar fitur utama
-- [x] Kontak: Manager Brian (08123456789)
-
-### 🔄 Level 2: Making It Interactive (IN PROGRESS)
-- [ ] Navigation bar responsif
-- [ ] Menu/Meal Plans page interaktif
-- [ ] Testimonials section dengan form
-
+### ✅ Level 1: Welcome to SEA Catering!
+### 🔄 Level 2: Making It Interactive 
 ### 📋 Level 3: Building A Subscription System
-- [ ] Form berlangganan dengan kalkulasi harga
-- [ ] Integrasi database backend
-- [ ] System management makanan
-
 ### 🔐 Level 4: Securing SEA
-- [ ] Autentikasi & autorisasi pengguna
-- [ ] Validasi & sanitasi input
-- [ ] Proteksi XSS, SQL Injection, CSRF
-
 ### 👥 Level 5: User & Admin Dashboard
-- [x] Dashboard pengguna untuk manage subscription
-- [x] Dashboard admin dengan metrics bisnis  
-- [x] Analytics dan reporting
 
 ## 🚀 Quick Start
 
@@ -63,8 +42,8 @@ Pastikan Anda telah menginstall:
 
 1. **Clone repository**
 ```bash
-git clone https://github.com/your-username/sea-catering.git
-cd sea-catering
+git clone https://github.com/arvardy184/sea-catering-app.git
+cd sea-catering-app
 ```
 
 2. **Install dependencies**
@@ -89,8 +68,8 @@ NEXTAUTH_SECRET="your-nextauth-secret"
 NEXTAUTH_URL="http://localhost:3000"
 
 # External Services
-CLOUDINARY_URL="your-cloudinary-url"
-STRIPE_SECRET_KEY="your-stripe-secret"
+GOOGLE_CLIENT_ID="google client id"
+GOOGLE_CLIENT_SECRET="google client secret"
 ```
 
 4. **Run development server**
@@ -123,7 +102,6 @@ Untuk mengakses Admin Dashboard:
 
 3. **Fitur Admin Dashboard**
    - 📊 Business metrics (New Subscriptions, MRR, Reactivations)
-   - 📅 Date range filtering
    - 📈 Subscription growth analytics
    - 📋 Recent subscriptions table
    - 📤 Export data to CSV
@@ -243,27 +221,6 @@ xl: '1280px',        /* Desktop */
 - ♿ **Accessibility**: WCAG 2.1 AA compliant
 - 🎯 **Conversion Rate**: > 5% target
 
-## 🔮 Roadmap
-
-### Phase 1 (Current)
-- [x] Homepage design & development
-- [x] Responsive layout
-- [x] Basic animations
-
-### Phase 2 (Next)
-- [ ] Interactive navigation
-- [ ] Menu/meal plans showcase
-- [ ] User testimonials
-
-### Phase 3 (Future)
-- [ ] Subscription system
-- [ ] Payment integration
-- [ ] User authentication
-
-### Phase 4 (Advanced)
-- [ ] Admin dashboard
-- [ ] Analytics integration
-- [ ] Advanced features
 
 ## 🤝 Contributing
 
@@ -288,6 +245,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
 ---
 
 <div align="center">
-  <p>Built with ❤️ by Arvan</p>
+  <p>Built with ❤️ by Arvan Y A</p>
   <p><strong>SEA Catering - Healthy Meals, Anytime, Anywhere</strong></p>
 </div>

@@ -20,7 +20,7 @@ const csrfHandler = async (): Promise<NextResponse> => {
   }
 };
 
-// Export dengan rate limiting aja, gak perlu auth karena token ini public
+
 export const GET = createApiHandler(csrfHandler, {
   rateLimit: { maxRequests: 100, windowMs: 60000 }, // 100 requests per minute
 }); 

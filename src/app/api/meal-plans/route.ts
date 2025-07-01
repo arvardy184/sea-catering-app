@@ -3,14 +3,12 @@ import { prisma, ensureDbConnection } from "@/lib/prisma";
 
 export async function GET(request: NextRequest) {
   try {
-    // Ensure database connection before proceeding
     await ensureDbConnection();
     
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');
     const popular = searchParams.get('popular');
 
-    // Build where clause based on query parameters
     const whereClause: {
       category?: string;
       popular?: boolean;

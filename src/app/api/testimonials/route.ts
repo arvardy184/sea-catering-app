@@ -75,7 +75,6 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   try {
-    // Ensure database connection before proceeding
     await ensureDbConnection();
     
     // Fetch all testimonials
