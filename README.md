@@ -114,8 +114,8 @@ Buka [http://localhost:3000](http://localhost:3000) untuk melihat aplikasi.
 Untuk mengakses Admin Dashboard:
 
 1. **Login sebagai Admin**
-   - Email: `admin@seacatering.com`  
-   - Password: `admin123!`
+   - Email: `corps@gmail.com`  
+   - Password: `Arvan123!`
 
 2. **Akses Dashboard**
    - Setelah login, klik "Dashboard" di navigation
@@ -288,6 +288,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
 ---
 
 <div align="center">
-  <p>Built with ❤️ for healthy living in Indonesia</p>
+  <p>Built with ❤️ by Arvan</p>
   <p><strong>SEA Catering - Healthy Meals, Anytime, Anywhere</strong></p>
 </div>
