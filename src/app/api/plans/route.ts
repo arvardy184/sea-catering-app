@@ -1,20 +1,20 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma, ensureDbConnection } from "@/lib/prisma";
-import { createApiHandler, AuthenticatedRequest } from "@/lib/auth-middleware";
+import { createApiHandler } from "@/lib/auth-middleware";
 import { paginationSchema } from "@/lib/validations";
 
 // GET - Fetch active plans for subscription selection
-const getHandler = async (req: AuthenticatedRequest): Promise<NextResponse> => {
+const getHandler = async (req: NextRequest): Promise<NextResponse> => {
   try {
     await ensureDbConnection();
     
     const { searchParams } = new URL(req.url);
     
-    // Parse pagination parameters
+    // Parse pagination parameters with better defaults handling
     const paginationResult = paginationSchema.safeParse({
-      page: searchParams.get('page'),
-      limit: searchParams.get('limit'),
-      search: searchParams.get('search'),
+      page: searchParams.get('page') || '1',
+      limit: searchParams.get('limit') || '10',
+      search: searchParams.get('search') || undefined,
       sortBy: searchParams.get('sortBy') || 'sortOrder',
       sortOrder: searchParams.get('sortOrder') || 'asc',
     });

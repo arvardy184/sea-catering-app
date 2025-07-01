@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Map } from '@/components/ui/Map';
-import { useToast } from '@/components/ui/Toast';
+import { useToast } from '@/hooks/useToast';
 import { 
   Phone, 
   Mail, 
@@ -62,7 +62,7 @@ const socialMedia = [
 ];
 
 export const Contact: React.FC = () => {
-  const { showToast } = useToast();
+  const toast = useToast();
   const [formData, setFormData] = useState<ContactForm>({
     name: '',
     email: '',
@@ -128,11 +128,11 @@ export const Contact: React.FC = () => {
           });
         }, 5000);
       } else {
-        showToast(`Error: ${result.error || 'Gagal mengirim pesan'}`, 'error');
+        toast.error(result.error || 'Gagal mengirim pesan');
       }
     } catch (error) {
       console.error('Error submitting contact form:', error);
-      showToast('Terjadi kesalahan. Silakan coba lagi.', 'error');
+              toast.error('Terjadi kesalahan. Silakan coba lagi.');
     } finally {
       setIsSubmitting(false);
     }

@@ -227,6 +227,7 @@ export const Hero: React.FC = () => {
               className="relative z-10"
             >
               <div className="w-full h-full bg-gradient-to-br from-orange-100 to-green-100 rounded-3xl overflow-hidden">
+{/* eslint-disable-next-line @next/next/no-img-element */}
                 <img 
                   src="/images/food.png" 
                   alt="Healthy meal from SEA Catering"

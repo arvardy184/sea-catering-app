@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
@@ -89,39 +89,7 @@ export default function AdminDashboard() {
     fetchSubscriptions();
   }, [session, status, router]);
 
-  useEffect(() => {
-    calculateMetrics();
-  }, [subscriptions, dateRange]);
-
-  useEffect(() => {
-    // Set dates after component mounts to prevent hydration mismatch
-    const now = new Date();
-    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-    setDateRange({
-      startDate: firstDay.toISOString().split('T')[0],
-      endDate: now.toISOString().split('T')[0]
-    });
-  }, []);
-
-  const fetchSubscriptions = async () => {
-    try {
-      setIsLoading(true);
-      const response = await fetch('/api/subscriptions');
-      const result = await response.json();
-
-      if (response.ok && result.data) {
-        setSubscriptions(result.data);
-      } else {
-        console.error('Failed to fetch subscriptions:', result);
-      }
-    } catch (error) {
-      console.error('Error fetching subscriptions:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const calculateMetrics = () => {
+  const calculateMetrics = useCallback(() => {
     const startDate = new Date(dateRange.startDate);
     const endDate = new Date(dateRange.endDate);
     
@@ -158,6 +126,38 @@ export default function AdminDashboard() {
       conversionRate,
       churnRate
     });
+  }, [subscriptions, dateRange]);
+
+  useEffect(() => {
+    calculateMetrics();
+  }, [calculateMetrics]);
+
+  useEffect(() => {
+    // Set dates after component mounts to prevent hydration mismatch
+    const now = new Date();
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+    setDateRange({
+      startDate: firstDay.toISOString().split('T')[0],
+      endDate: now.toISOString().split('T')[0]
+    });
+  }, []);
+
+  const fetchSubscriptions = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/subscriptions');
+      const result = await response.json();
+
+      if (response.ok && result.data) {
+        setSubscriptions(result.data);
+      } else {
+        console.error('Failed to fetch subscriptions:', result);
+      }
+    } catch (error) {
+      console.error('Error fetching subscriptions:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleDateRangeChange = (field: 'startDate' | 'endDate', value: string) => {

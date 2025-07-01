@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma, ensureDbConnection } from "@/lib/prisma";
-import { sanitizeInput } from "@/lib/utils";
+import { sanitizeInput } from "@/lib/server-utils";
 import { createSubscriptionSchema, paginationSchema } from "@/lib/validations";
 import { createApiHandler, AuthenticatedRequest } from "@/lib/auth-middleware";
 
@@ -116,7 +116,15 @@ const postHandler = async (req: AuthenticatedRequest): Promise<NextResponse> => 
           userId: req.user?.id, // Associate with user if authenticated
         },
         include: {
-          plan: true,
+          plan: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              description: true,
+              basePrice: true,
+            }
+          },
         }
       });
 

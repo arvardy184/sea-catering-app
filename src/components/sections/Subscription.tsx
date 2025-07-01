@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { formatCurrency } from '@/lib/utils';
+import { useToast } from '@/hooks/useToast';
 import { 
   Check, 
   Star, 
@@ -13,91 +14,112 @@ import {
   Shield,
   Calculator,
   Users,
-  Utensils
+  Utensils,
+  Loader2
 } from 'lucide-react';
+
+// Types from API responses
+interface Plan {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  basePrice: number;
+  features: string[];
+  color: string;
+  sortOrder: number;
+}
+
+interface MealType {
+  id: string;
+  name: string;
+  slug: string;
+  icon: string;
+  timeRange: string;
+  sortOrder: number;
+}
+
+interface DeliveryDay {
+  id: string;
+  name: string;
+  slug: string;
+  dayOfWeek: number;
+}
 
 interface SubscriptionFormData {
   name: string;
   phone: string;
-  plan: 'diet' | 'protein' | 'royal' | '';
-  mealTypes: string[];
-  deliveryDays: string[];
+  planId: string;
+  mealTypeIds: string[];
+  deliveryDayIds: string[];
   allergies: string;
 }
 
-const plans = [
-  {
-    id: 'diet',
-    name: 'Diet Plan',
-    price: 30000,
-    description: 'Menu rendah kalori untuk program diet sehat',
-    features: ['Low Calorie', 'High Fiber', 'Fresh Vegetables', '300-400 cal/meal'],
-    color: 'from-green-400 to-green-600'
-  },
-  {
-    id: 'protein',
-    name: 'Protein Plan', 
-    price: 40000,
-    description: 'Menu tinggi protein untuk massa otot',
-    features: ['High Protein', 'Lean Meat', 'Post-Workout', '25-30g protein/meal'],
-    color: 'from-blue-400 to-blue-600'
-  },
-  {
-    id: 'royal',
-    name: 'Royal Plan',
-    price: 60000,
-    description: 'Menu premium dengan bahan terbaik',
-    features: ['Premium Ingredients', 'Gourmet Style', 'Balanced Nutrition', 'Chef Special'],
-    color: 'from-purple-400 to-purple-600'
-  }
-];
-
-const mealTypes = [
-  { id: 'breakfast', name: 'Sarapan', icon: '🌅', time: '07:00 - 09:00' },
-  { id: 'lunch', name: 'Makan Siang', icon: '☀️', time: '12:00 - 14:00' },
-  { id: 'dinner', name: 'Makan Malam', icon: '🌙', time: '18:00 - 20:00' }
-];
-
-const weekDays = [
-  { id: 'monday', name: 'Senin' },
-  { id: 'tuesday', name: 'Selasa' },
-  { id: 'wednesday', name: 'Rabu' },
-  { id: 'thursday', name: 'Kamis' },
-  { id: 'friday', name: 'Jumat' },
-  { id: 'saturday', name: 'Sabtu' },
-  { id: 'sunday', name: 'Minggu' }
-];
-
 export const Subscription: React.FC = () => {
+  // State management
   const [formData, setFormData] = useState<SubscriptionFormData>({
     name: '',
     phone: '',
-    plan: '',
-    mealTypes: [],
-    deliveryDays: [],
+    planId: '',
+    mealTypeIds: [],
+    deliveryDayIds: [],
     allergies: ''
   });
 
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Price calculation formula: Plan Price × Meal Types × Delivery Days × 4.3
-  const calculatePrice = () => {
-    if (!formData.plan || formData.mealTypes.length === 0 || formData.deliveryDays.length === 0) {
-      return 0;
-    }
-    
-    const selectedPlan = plans.find(p => p.id === formData.plan);
-    if (!selectedPlan) return 0;
-    
-    return selectedPlan.price * formData.mealTypes.length * formData.deliveryDays.length * 4.3;
-  };
+  // Data from APIs
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [mealTypes, setMealTypes] = useState<MealType[]>([]);
+  const [deliveryDays, setDeliveryDays] = useState<DeliveryDay[]>([]);
+  const [isLoadingData, setIsLoadingData] = useState(true);
+
+  // Toast notifications
+  const toast = useToast();
+
+  // Fetch data from APIs on component mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoadingData(true);
+
+        const [plansRes, mealTypesRes, deliveryDaysRes] = await Promise.all([
+          fetch('/api/plans'),
+          fetch('/api/meal-types'),
+          fetch('/api/delivery-days')
+        ]);
+
+        if (!plansRes.ok || !mealTypesRes.ok || !deliveryDaysRes.ok) {
+          throw new Error('Failed to fetch subscription data');
+        }
+
+        const [plansData, mealTypesData, deliveryDaysData] = await Promise.all([
+          plansRes.json(),
+          mealTypesRes.json(),
+          deliveryDaysRes.json()
+        ]);
+
+        setPlans(plansData.data || []);
+        setMealTypes(mealTypesData.data || []);
+        setDeliveryDays(deliveryDaysData.data || []);
+
+      } catch (error) {
+        console.error('Error fetching subscription data:', error);
+        toast.error('Gagal memuat data subscription. Silakan refresh halaman.');
+      } finally {
+        setIsLoadingData(false);
+      }
+    };
+
+    fetchData();
+  }, [toast]);
 
   const handleInputChange = (field: keyof SubscriptionFormData, value: string | string[]) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const toggleArrayItem = (field: 'mealTypes' | 'deliveryDays', value: string) => {
+  const toggleArrayItem = (field: 'mealTypeIds' | 'deliveryDayIds', value: string) => {
     setFormData(prev => ({
       ...prev,
       [field]: prev[field].includes(value)
@@ -119,35 +141,47 @@ export const Subscription: React.FC = () => {
         body: JSON.stringify({
           name: formData.name,
           phone: formData.phone,
-          plan: formData.plan,
-          mealTypes: formData.mealTypes,
-          deliveryDays: formData.deliveryDays,
+          planId: formData.planId,
+          mealTypeIds: formData.mealTypeIds,
+          deliveryDayIds: formData.deliveryDayIds,
           allergies: formData.allergies,
-          totalPrice: calculatePrice(),
         }),
       });
 
       const result = await response.json();
 
       if (response.ok) {
-        alert(`🎉 Subscription berhasil dibuat!\n\nTotal: ${formatCurrency(calculatePrice())}\n\nBrian akan menghubungi Anda di ${formData.phone} untuk konfirmasi pesanan dalam 1x24 jam.`);
+        toast.success(
+          `🎉 Subscription berhasil dibuat! Total: ${formatCurrency(result.data.totalPrice)}. Brian akan menghubungi Anda di ${formData.phone} untuk konfirmasi pesanan dalam 1x24 jam.`,
+          {
+            duration: 7000,
+            title: 'Subscription Berhasil!'
+          }
+        );
         
         // Reset form
         setFormData({
           name: '',
           phone: '',
-          plan: '',
-          mealTypes: [],
-          deliveryDays: [],
+          planId: '',
+          mealTypeIds: [],
+          deliveryDayIds: [],
           allergies: ''
         });
         setCurrentStep(1);
       } else {
-        alert(`❌ Error: ${result.error || 'Gagal membuat subscription'}`);
+        // Handle validation errors
+        if (result.details && Array.isArray(result.details)) {
+          result.details.forEach((detail: { field: string; message: string }) => {
+            toast.error(`${detail.field}: ${detail.message}`);
+          });
+        } else {
+          toast.error(result.error || 'Gagal membuat subscription');
+        }
       }
     } catch (error) {
       console.error('Error submitting subscription:', error);
-      alert('❌ Terjadi kesalahan. Silakan coba lagi.');
+      toast.error('Terjadi kesalahan. Silakan coba lagi.');
     } finally {
       setIsSubmitting(false);
     }
@@ -156,11 +190,27 @@ export const Subscription: React.FC = () => {
   const isStepValid = (step: number) => {
     switch (step) {
       case 1: return formData.name.trim() && formData.phone.trim();
-      case 2: return formData.plan !== '';
-      case 3: return formData.mealTypes.length > 0 && formData.deliveryDays.length > 0;
+      case 2: return formData.planId !== '';
+      case 3: return formData.mealTypeIds.length > 0 && formData.deliveryDayIds.length > 0;
       default: return true;
     }
   };
+
+  // Show loading state while fetching data
+  if (isLoadingData) {
+    return (
+      <section id="subscription" className="py-20 bg-gradient-to-br from-orange-50 to-green-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-orange-500" />
+              <p className="text-gray-600">Loading subscription options...</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="subscription" className="py-20 bg-gradient-to-br from-orange-50 to-green-50">
@@ -200,358 +250,315 @@ export const Subscription: React.FC = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
             viewport={{ once: true }}
-            className="text-xl text-gray-600 max-w-3xl mx-auto"
+            className="text-lg text-gray-600 max-w-2xl mx-auto"
           >
-            Berlangganan paket makanan sehat SEA Catering dan nikmati kemudahan hidup sehat setiap hari
+            Pilih paket katering sehat yang sesuai dengan kebutuhan dan gaya hidup Anda
           </motion.p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          
-          {/* Subscription Form */}
-          <div className="lg:col-span-2">
-            <Card className="p-8">
-              
-              {/* Progress Steps */}
-              <div className="flex items-center justify-between mb-8">
+        {/* Multi-step Form */}
+        <div className="max-w-4xl mx-auto">
+          <form onSubmit={handleSubmit} className="space-y-8">
+            
+            {/* Step Progress */}
+            <div className="flex justify-center mb-12">
+              <div className="flex items-center space-x-4">
                 {[1, 2, 3].map((step) => (
                   <div key={step} className="flex items-center">
                     <div className={`
-                      w-10 h-10 rounded-full flex items-center justify-center font-semibold
+                      w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium
                       ${currentStep >= step 
                         ? 'bg-orange-500 text-white' 
-                        : 'bg-gray-200 text-gray-600'
+                        : 'bg-gray-200 text-gray-500'
                       }
                     `}>
                       {step}
                     </div>
-                    <span className={`ml-2 text-sm font-medium ${
-                      currentStep >= step ? 'text-orange-600' : 'text-gray-500'
-                    }`}>
-                      {step === 1 ? 'Info Dasar' : step === 2 ? 'Pilih Paket' : 'Kustomisasi'}
-                    </span>
                     {step < 3 && (
-                      <div className={`w-16 h-1 mx-4 ${
-                        currentStep > step ? 'bg-orange-500' : 'bg-gray-200'
-                      }`} />
+                      <div className={`
+                        w-16 h-0.5 mx-2
+                        ${currentStep > step ? 'bg-orange-500' : 'bg-gray-200'}
+                      `} />
                     )}
                   </div>
                 ))}
               </div>
+            </div>
 
-              <form onSubmit={handleSubmit}>
-                
-                {/* Step 1: Basic Info */}
-                {currentStep === 1 && (
-                  <motion.div
-                    initial={{ opacity: 0, x: 50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="space-y-6"
-                  >
-                    <h3 className="text-2xl font-bold text-gray-900 mb-6">
-                      Informasi Dasar
-                    </h3>
-                    
+            {/* Step 1: Personal Information */}
+            {currentStep === 1 && (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Card className="p-8">
+                  <div className="text-center mb-8">
+                    <Users className="w-12 h-12 text-orange-500 mx-auto mb-4" />
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Informasi Personal</h3>
+                    <p className="text-gray-600">Berikan data diri untuk pengiriman</p>
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Nama Lengkap *
                       </label>
                       <input
                         type="text"
+                        required
                         value={formData.name}
                         onChange={(e) => handleInputChange('name', e.target.value)}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        placeholder="Masukkan nama lengkap Anda"
-                        required
+                        placeholder="Masukkan nama lengkap"
                       />
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Nomor WhatsApp Aktif *
+                        Nomor WhatsApp *
                       </label>
                       <input
                         type="tel"
+                        required
                         value={formData.phone}
                         onChange={(e) => handleInputChange('phone', e.target.value)}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        placeholder="08123456789"
-                        required
+                        placeholder="Contoh: 081234567890"
                       />
-                      <p className="text-sm text-gray-500 mt-1">
-                        Untuk konfirmasi pesanan dan update pengiriman
-                      </p>
                     </div>
-                  </motion.div>
-                )}
+                  </div>
 
-                {/* Step 2: Plan Selection */}
-                {currentStep === 2 && (
-                  <motion.div
-                    initial={{ opacity: 0, x: 50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="space-y-6"
-                  >
-                    <h3 className="text-2xl font-bold text-gray-900 mb-6">
-                      Pilih Paket Makanan
-                    </h3>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {plans.map((plan) => (
-                        <div
-                          key={plan.id}
-                          onClick={() => handleInputChange('plan', plan.id)}
-                          className={`
-                            relative p-6 border-2 rounded-xl cursor-pointer transition-all
-                            ${formData.plan === plan.id 
-                              ? 'border-orange-500 bg-orange-50' 
-                              : 'border-gray-200 hover:border-orange-300'
-                            }
-                          `}
-                        >
-                          <div className={`w-12 h-12 rounded-lg bg-gradient-to-r ${plan.color} flex items-center justify-center mb-4`}>
-                            <Utensils className="w-6 h-6 text-white" />
-                          </div>
-                          
-                          <h4 className="text-lg font-bold text-gray-900 mb-2">
-                            {plan.name}
-                          </h4>
-                          
-                          <p className="text-2xl font-bold text-orange-600 mb-3">
-                            {formatCurrency(plan.price)}
-                            <span className="text-sm text-gray-500 font-normal">/meal</span>
-                          </p>
-                          
-                          <p className="text-gray-600 text-sm mb-4">
-                            {plan.description}
-                          </p>
-                          
-                          <ul className="space-y-2">
-                            {plan.features.map((feature, index) => (
-                              <li key={index} className="flex items-center gap-2 text-sm text-gray-600">
-                                <Check className="w-4 h-4 text-green-500" />
-                                {feature}
-                              </li>
-                            ))}
-                          </ul>
+                  <div className="mt-8 flex justify-end">
+                    <Button
+                      type="button"
+                      onClick={() => setCurrentStep(2)}
+                      disabled={!isStepValid(1)}
+                      className="px-8 py-3"
+                    >
+                      Lanjut
+                    </Button>
+                  </div>
+                </Card>
+              </motion.div>
+            )}
 
-                          {formData.plan === plan.id && (
-                            <div className="absolute top-4 right-4">
-                              <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
-                                <Check className="w-4 h-4 text-white" />
-                              </div>
-                            </div>
-                          )}
+            {/* Step 2: Plan Selection */}
+            {currentStep === 2 && (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Card className="p-8">
+                  <div className="text-center mb-8">
+                    <Utensils className="w-12 h-12 text-orange-500 mx-auto mb-4" />
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Pilih Paket</h3>
+                    <p className="text-gray-600">Pilih paket yang sesuai dengan tujuan kesehatan Anda</p>
+                  </div>
+
+                  <div className="grid md:grid-cols-3 gap-6 mb-8">
+                    {plans.map((plan) => (
+                      <motion.div
+                        key={plan.id}
+                        whileHover={{ y: -5 }}
+                        transition={{ duration: 0.2 }}
+                        className={`
+                          border-2 rounded-xl p-6 cursor-pointer transition-all
+                          ${formData.planId === plan.id
+                            ? 'border-orange-500 bg-orange-50' 
+                            : 'border-gray-200 hover:border-orange-300'
+                          }
+                        `}
+                        onClick={() => handleInputChange('planId', plan.id)}
+                      >
+                        <div className={`inline-flex px-3 py-1 rounded-full text-sm font-medium mb-4 bg-gradient-to-r ${plan.color} text-white`}>
+                          {plan.name}
                         </div>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
+                        
+                        <div className="mb-4">
+                          <div className="text-2xl font-bold text-gray-900">
+                            {formatCurrency(plan.basePrice)}
+                          </div>
+                          <div className="text-sm text-gray-500">per porsi</div>
+                        </div>
 
-                {/* Step 3: Customization */}
-                {currentStep === 3 && (
-                  <motion.div
-                    initial={{ opacity: 0, x: 50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="space-y-8"
-                  >
-                    <h3 className="text-2xl font-bold text-gray-900 mb-6">
-                      Kustomisasi Pengiriman
-                    </h3>
-                    
-                    {/* Meal Types */}
+                        <p className="text-gray-600 mb-4 text-sm">
+                          {plan.description}
+                        </p>
+
+                        <ul className="space-y-2">
+                          {plan.features.map((feature, index) => (
+                            <li key={index} className="flex items-center text-sm">
+                              <Check className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
+                              <span>{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  <div className="flex justify-between">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setCurrentStep(1)}
+                      className="px-8 py-3"
+                    >
+                      Kembali
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => setCurrentStep(3)}
+                      disabled={!isStepValid(2)}
+                      className="px-8 py-3"
+                    >
+                      Lanjut
+                    </Button>
+                  </div>
+                </Card>
+              </motion.div>
+            )}
+
+            {/* Step 3: Schedule & Preferences */}
+            {currentStep === 3 && (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Card className="p-8">
+                  <div className="text-center mb-8">
+                    <Clock className="w-12 h-12 text-orange-500 mx-auto mb-4" />
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Jadwal & Preferensi</h3>
+                    <p className="text-gray-600">Atur jadwal pengiriman sesuai kebutuhan Anda</p>
+                  </div>
+
+                  <div className="space-y-8">
+                    {/* Meal Types Selection */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-4">
-                        Jenis Makanan * (Pilih minimal 1)
-                      </label>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                        {mealTypes.map((meal) => (
+                      <h4 className="text-lg font-semibold text-gray-900 mb-4">
+                        Jenis Makanan *
+                      </h4>
+                      <div className="grid md:grid-cols-3 gap-4">
+                        {mealTypes.map((mealType) => (
                           <div
-                            key={meal.id}
-                            onClick={() => toggleArrayItem('mealTypes', meal.id)}
+                            key={mealType.id}
                             className={`
-                              p-4 border-2 rounded-lg cursor-pointer transition-all
-                              ${formData.mealTypes.includes(meal.id)
-                                ? 'border-orange-500 bg-orange-50'
+                              border-2 rounded-lg p-4 cursor-pointer transition-all
+                              ${formData.mealTypeIds.includes(mealType.id)
+                                ? 'border-orange-500 bg-orange-50' 
                                 : 'border-gray-200 hover:border-orange-300'
                               }
                             `}
+                            onClick={() => toggleArrayItem('mealTypeIds', mealType.id)}
                           >
-                            <div className="flex items-center gap-3">
-                              <span className="text-2xl">{meal.icon}</span>
-                              <div>
-                                <div className="font-semibold text-gray-900">{meal.name}</div>
-                                <div className="text-sm text-gray-500">{meal.time}</div>
-                              </div>
+                            <div className="text-center">
+                              <div className="text-2xl mb-2">{mealType.icon}</div>
+                              <div className="font-medium text-gray-900">{mealType.name}</div>
+                              <div className="text-sm text-gray-500">{mealType.timeRange}</div>
                             </div>
                           </div>
                         ))}
                       </div>
                     </div>
 
-                    {/* Delivery Days */}
+                    {/* Delivery Days Selection */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-4">
-                        Hari Pengiriman * (Pilih minimal 1)
-                      </label>
-                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-2">
-                        {weekDays.map((day) => (
-                          <button
+                      <h4 className="text-lg font-semibold text-gray-900 mb-4">
+                        Hari Pengiriman *
+                      </h4>
+                      <div className="grid grid-cols-7 gap-2">
+                        {deliveryDays.map((day) => (
+                          <div
                             key={day.id}
-                            type="button"
-                            onClick={() => toggleArrayItem('deliveryDays', day.id)}
                             className={`
-                              p-3 border-2 rounded-lg font-medium transition-all
-                              ${formData.deliveryDays.includes(day.id)
-                                ? 'border-orange-500 bg-orange-500 text-white'
-                                : 'border-gray-200 text-gray-700 hover:border-orange-300'
+                              text-center py-3 px-2 rounded-lg cursor-pointer transition-all border-2
+                              ${formData.deliveryDayIds.includes(day.id)
+                                ? 'border-orange-500 bg-orange-500 text-white' 
+                                : 'border-gray-200 hover:border-orange-300'
                               }
                             `}
+                            onClick={() => toggleArrayItem('deliveryDayIds', day.id)}
                           >
-                            {day.name}
-                          </button>
+                            <div className="text-sm font-medium">{day.name}</div>
+                          </div>
                         ))}
                       </div>
                     </div>
 
                     {/* Allergies */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Alergi atau Pantangan (Opsional)
-                      </label>
+                      <h4 className="text-lg font-semibold text-gray-900 mb-4">
+                        Alergi Makanan (Opsional)
+                      </h4>
                       <textarea
                         value={formData.allergies}
                         onChange={(e) => handleInputChange('allergies', e.target.value)}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                         rows={3}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
-                        placeholder="Contoh: Tidak bisa makan seafood, alergi kacang, vegetarian, dll."
+                        placeholder="Contoh: Kacang, seafood, produk susu..."
                       />
                     </div>
-                  </motion.div>
-                )}
+                  </div>
 
-                {/* Navigation Buttons */}
-                <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-200">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => currentStep > 1 && setCurrentStep(currentStep - 1)}
-                    disabled={currentStep === 1}
-                    className="px-6"
-                  >
-                    Kembali
-                  </Button>
-                  
-                  {currentStep < 3 ? (
+                  <div className="flex justify-between mt-8">
                     <Button
                       type="button"
-                      onClick={() => setCurrentStep(currentStep + 1)}
-                      disabled={!isStepValid(currentStep)}
-                      className="bg-orange-500 hover:bg-orange-600 text-white px-6"
+                      variant="outline"
+                      onClick={() => setCurrentStep(2)}
+                      className="px-8 py-3"
                     >
-                      Lanjut
+                      Kembali
                     </Button>
-                  ) : (
                     <Button
                       type="submit"
-                      disabled={!isStepValid(currentStep) || isSubmitting}
-                      className="bg-orange-500 hover:bg-orange-600 text-white px-6"
+                      disabled={!isStepValid(3) || isSubmitting}
+                      className="px-8 py-3"
                     >
-                      {isSubmitting ? 'Memproses...' : 'Berlangganan Sekarang'}
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                          Memproses...
+                        </>
+                      ) : (
+                        'Buat Subscription'
+                      )}
                     </Button>
-                  )}
-                </div>
-              </form>
-            </Card>
-          </div>
+                  </div>
+                </Card>
+              </motion.div>
+            )}
+          </form>
+        </div>
 
-          {/* Price Summary */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-8 space-y-6">
-              
-              {/* Price Calculator */}
-              <Card className="p-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <Calculator className="w-5 h-5 text-orange-500" />
-                  <h3 className="text-lg font-bold text-gray-900">
-                    Ringkasan Pesanan
-                  </h3>
-                </div>
-                
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Paket:</span>
-                    <span className="font-medium">
-                      {formData.plan ? plans.find(p => p.id === formData.plan)?.name : '-'}
-                    </span>
-                  </div>
-                  
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Harga per meal:</span>
-                    <span className="font-medium">
-                      {formData.plan ? formatCurrency(plans.find(p => p.id === formData.plan)?.price || 0) : '-'}
-                    </span>
-                  </div>
-                  
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Jenis makanan:</span>
-                    <span className="font-medium">
-                      {formData.mealTypes.length > 0 ? `${formData.mealTypes.length} jenis` : '-'}
-                    </span>
-                  </div>
-                  
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Hari pengiriman:</span>
-                    <span className="font-medium">
-                      {formData.deliveryDays.length > 0 ? `${formData.deliveryDays.length} hari` : '-'}
-                    </span>
-                  </div>
-                  
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Periode:</span>
-                    <span className="font-medium">1 bulan (4.3 minggu)</span>
-                  </div>
-                </div>
-                
-                <div className="border-t border-gray-200 mt-4 pt-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-lg font-bold text-gray-900">Total:</span>
-                    <span className="text-2xl font-bold text-orange-600">
-                      {calculatePrice() > 0 ? formatCurrency(calculatePrice()) : '-'}
-                    </span>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Formula: Harga × Jenis Makanan × Hari × 4.3 minggu
-                  </p>
-                </div>
-              </Card>
-
-              {/* Benefits */}
-              <Card className="p-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">
-                  Keuntungan Berlangganan
-                </h3>
-                
-                <ul className="space-y-3">
-                  {[
-                    { icon: Truck, text: 'Pengiriman gratis setiap hari' },
-                    { icon: Clock, text: 'Hemat waktu memasak' },
-                    { icon: Shield, text: 'Kualitas terjamin segar' },
-                    { icon: Users, text: 'Konsultasi gizi gratis' }
-                  ].map((benefit, index) => (
-                    <li key={index} className="flex items-center gap-3">
-                      <benefit.icon className="w-5 h-5 text-green-500" />
-                      <span className="text-gray-700">{benefit.text}</span>
-                    </li>
-                  ))}
-                </ul>
-              </Card>
+        {/* Additional Info */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="mt-16 text-center"
+        >
+          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            <div className="flex flex-col items-center">
+              <Truck className="w-8 h-8 text-orange-500 mb-4" />
+              <h4 className="font-semibold text-gray-900 mb-2">Gratis Ongkir</h4>
+              <p className="text-sm text-gray-600">Pengiriman gratis untuk area Jabodetabek</p>
+            </div>
+            <div className="flex flex-col items-center">
+              <Shield className="w-8 h-8 text-orange-500 mb-4" />
+              <h4 className="font-semibold text-gray-900 mb-2">Higienis & Aman</h4>
+              <p className="text-sm text-gray-600">Diproses dengan standar keamanan pangan</p>
+            </div>
+            <div className="flex flex-col items-center">
+              <Calculator className="w-8 h-8 text-orange-500 mb-4" />
+              <h4 className="font-semibold text-gray-900 mb-2">Hitung Kalori</h4>
+              <p className="text-sm text-gray-600">Kalori sudah dihitung sesuai target Anda</p>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

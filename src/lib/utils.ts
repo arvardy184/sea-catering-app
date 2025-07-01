@@ -24,52 +24,27 @@ export function formatPhoneNumber(phone: string): string {
   return phone;
 }
 
-import DOMPurify from 'dompurify';
-import { JSDOM } from 'jsdom';
-
-// Create a fake DOM environment for server-side DOMPurify
-const createDOMPurify = () => {
-  if (typeof window !== 'undefined') {
-    // Client-side
-    return DOMPurify;
-  } else {
-    // Server-side
-    const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const purify = DOMPurify(dom.window as any);
-    return purify;
-  }
-};
-
-// Security utility functions
+// Simple client-side sanitization functions (no JSDOM dependencies)
 export function sanitizeInput(input: string): string {
   if (typeof input !== 'string') return '';
   
-  const purify = createDOMPurify();
-  
-  // Configure DOMPurify for text input (no HTML allowed)
-  return purify.sanitize(input, { 
-    ALLOWED_TAGS: [], // No HTML tags allowed
-    ALLOWED_ATTR: [], // No attributes allowed
-    KEEP_CONTENT: true, // Keep text content
-    FORBID_TAGS: ['script', 'object', 'embed', 'link', 'style'],
-    FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover']
-  }).trim();
+  // Basic sanitization for text input
+  return input
+    .replace(/[<>]/g, '') // Remove HTML tags
+    .replace(/javascript:/gi, '') // Remove javascript: protocol
+    .replace(/on\w+\s*=/gi, '') // Remove event handlers
+    .trim();
 }
 
 export function sanitizeHtml(html: string): string {
   if (typeof html !== 'string') return '';
   
-  const purify = createDOMPurify();
-  
-  // Configure DOMPurify for safe HTML (limited tags)
-  return purify.sanitize(html, {
-    ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'i', 'b'],
-    ALLOWED_ATTR: [],
-    FORBID_TAGS: ['script', 'object', 'embed', 'link', 'style'],
-    FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover'],
-    KEEP_CONTENT: true
-  });
+  // Basic HTML sanitization - remove dangerous elements
+  return html
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remove script tags
+    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '') // Remove iframe tags
+    .replace(/javascript:/gi, '') // Remove javascript: protocol
+    .replace(/on\w+\s*=/gi, ''); // Remove event handlers
 }
 
 export function escapeHtml(text: string): string {
@@ -90,11 +65,8 @@ export function escapeHtml(text: string): string {
 export function removeScriptTags(input: string): string {
   if (typeof input !== 'string') return '';
   
-  const purify = createDOMPurify();
-  return purify.sanitize(input, {
-    FORBID_TAGS: ['script'],
-    FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'javascript:']
-  });
+  // Basic script tag removal
+  return input.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
 }
 
 export function sanitizeFilename(filename: string): string {

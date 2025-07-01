@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma, ensureDbConnection } from "@/lib/prisma";
-import { createApiHandler, AuthenticatedRequest } from "@/lib/auth-middleware";
+import { createApiHandler } from "@/lib/auth-middleware";
 
 // GET - Fetch active delivery days for subscription selection
 // eslint-disable-next-line @typescript-eslint/no-unused-vars  
-const getHandler = async (_req: AuthenticatedRequest): Promise<NextResponse> => {
+const getHandler = async (_req: NextRequest): Promise<NextResponse> => {
   try {
     await ensureDbConnection();
     
