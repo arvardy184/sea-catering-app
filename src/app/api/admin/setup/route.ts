@@ -4,9 +4,14 @@ import bcrypt from 'bcryptjs';
 
 export async function POST() {
   try {
+    // Get admin credentials from environment variables
+    const adminEmail = process.env.ADMIN_EMAIL || 'corps@gmail.com';
+    const adminPassword = process.env.ADMIN_PASSWORD || 'Arvan123!';
+    const adminName = process.env.ADMIN_NAME || 'SEA Catering Admin';
+
     // Check if admin already exists
     const existingAdmin = await prisma.user.findUnique({
-      where: { email: 'admin@seacatering.com' }
+      where: { email: adminEmail }
     });
 
     if (existingAdmin) {
@@ -16,14 +21,14 @@ export async function POST() {
       }, { status: 400 });
     }
 
-    // Create admin user
-    const adminPassword = await bcrypt.hash('admin123!', 12);
+    // Create admin user with hashed password
+    const hashedPassword = await bcrypt.hash(adminPassword, 12);
     
     const adminUser = await prisma.user.create({
       data: {
-        email: 'admin@seacatering.com',
-        name: 'SEA Catering Admin',
-        password: adminPassword,
+        email: adminEmail,
+        name: adminName,
+        password: hashedPassword,
         role: 'ADMIN',
       },
     });

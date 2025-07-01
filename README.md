@@ -67,6 +67,11 @@ DATABASE_URL="your-database-url"
 NEXTAUTH_SECRET="your-nextauth-secret"
 NEXTAUTH_URL="http://localhost:3000"
 
+# Admin Setup (optional - defaults provided)
+ADMIN_EMAIL="your-admin@email.com"
+ADMIN_PASSWORD="your-secure-password"
+ADMIN_NAME="Your Admin Name"
+
 # External Services
 GOOGLE_CLIENT_ID="google client id"
 GOOGLE_CLIENT_SECRET="google client secret"

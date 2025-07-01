@@ -3,6 +3,18 @@ import { prisma, ensureDbConnection } from "@/lib/prisma";
 import { createApiHandler } from "@/lib/auth-middleware";
 import { paginationSchema } from "@/lib/validations";
 
+// Safe JSON parser to handle potential UTF-8 issues
+function safeJsonParse(jsonString: string, fallback: unknown[] = []) {
+  try {
+    // Remove any null bytes or invalid UTF-8 characters
+    const cleanedString = jsonString.replace(/\0/g, '').replace(/[^\x20-\x7E\u00A0-\uFFFF]/g, '');
+    return JSON.parse(cleanedString);
+  } catch (error) {
+    console.warn('Failed to parse JSON features:', error);
+    return fallback;
+  }
+}
+
 // GET - Fetch active plans for subscription selection
 const getHandler = async (req: NextRequest): Promise<NextResponse> => {
   try {
@@ -46,7 +58,7 @@ const getHandler = async (req: NextRequest): Promise<NextResponse> => {
     // Build order by clause
     const orderBy: Record<string, 'asc' | 'desc'> = { [sortBy as string]: sortOrder };
 
-    // Fetch plans
+    // Fetch plans with explicit error handling
     const [plans, total] = await Promise.all([
       prisma.plan.findMany({
         where: whereClause,
@@ -63,14 +75,18 @@ const getHandler = async (req: NextRequest): Promise<NextResponse> => {
           color: true,
           sortOrder: true,
         },
+      }).catch((error) => {
+        console.error('Error fetching plans:', error);
+        // Return empty array on DB error to prevent complete failure
+        return [];
       }),
-      prisma.plan.count({ where: whereClause }),
+      prisma.plan.count({ where: whereClause }).catch(() => 0),
     ]);
 
-    // Transform features from JSON string to array
+    // Transform features from JSON string to array with safe parsing
     const transformedPlans = plans.map(plan => ({
       ...plan,
-      features: JSON.parse(plan.features),
+      features: safeJsonParse(plan.features),
     }));
 
     return NextResponse.json({
@@ -88,7 +104,10 @@ const getHandler = async (req: NextRequest): Promise<NextResponse> => {
   } catch (error) {
     console.error("Error fetching plans:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { 
+        error: "Internal server error",
+        details: process.env.NODE_ENV === 'development' ? error : undefined 
+      },
       { status: 500 }
     );
   }

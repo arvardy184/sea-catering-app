@@ -29,9 +29,9 @@ export default function SignInForm() {
       })
 
       if (result?.error) {
-        // If this is the first attempt and it's an admin login, try once more
-        if (retryCount === 0 && email === "admin@seacatering.com") {
-          console.log("First attempt failed for admin, retrying...")
+        // Simple retry logic for any login attempt
+        if (retryCount === 0) {
+          console.log("First attempt failed, retrying...")
           setRetryCount(1)
           
           // Wait a bit before retry to allow DB connection to establish

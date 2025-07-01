@@ -7,12 +7,12 @@ const globalForPrisma = globalThis as unknown as {
 export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
-    log: ['query'],
+    log: process.env.NODE_ENV === 'development' ? ['query', 'error'] : ['error'],
     datasources: {
       db: {
         url: process.env.DATABASE_URL
       }
-    }
+    },
   });
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
@@ -22,8 +22,8 @@ export async function ensureDbConnection(maxRetries = 3) {
   for (let i = 0; i < maxRetries; i++) {
     try {
       await prisma.$connect();
-      // Test query to ensure connection is working
-      await prisma.$queryRaw`SELECT 1`;
+      // Simple health check using normal Prisma query instead of raw SQL
+      await prisma.user.findFirst({ take: 1 });
       return true;
     } catch (error) {
       console.warn(`Database connection attempt ${i + 1}/${maxRetries} failed:`, error);
@@ -37,4 +37,13 @@ export async function ensureDbConnection(maxRetries = 3) {
     }
   }
   return false;
+}
+
+// Clean disconnect for serverless
+export async function disconnectPrisma() {
+  try {
+    await prisma.$disconnect();
+  } catch (error) {
+    console.warn('Error disconnecting Prisma:', error);
+  }
 } 
