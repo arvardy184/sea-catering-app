@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Map } from '@/components/ui/Map';
-import { useToast } from '@/hooks/useToast';
+import { useToast } from '@/components/ui/Toast';
 import { 
   Phone, 
   Mail, 

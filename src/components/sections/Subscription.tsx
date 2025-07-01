@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { formatCurrency } from '@/lib/utils';
-import { useToast } from '@/hooks/useToast';
+import { useToast } from '@/components/ui/Toast';
 import { 
   Check, 
   Star, 

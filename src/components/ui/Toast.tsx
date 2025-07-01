@@ -1,10 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { createContext, useContext } from 'react';
 import * as ToastPrimitive from '@radix-ui/react-toast';
 import { cn } from '@/lib/utils';
 import { X, CheckCircle, AlertCircle, AlertTriangle, Info } from 'lucide-react';
-import { Toast as ToastType } from '@/hooks/useToast';
+import { useToast as useToastHook, Toast as ToastType } from '@/hooks/useToast';
+
+// Create Toast Context
+const ToastContext = createContext<ReturnType<typeof useToastHook> | undefined>(undefined);
 
 // Toast Viewport - where toasts appear
 export const ToastViewport = React.forwardRef<
@@ -148,23 +151,34 @@ export function Toast({ toast, onRemove }: ToastProps) {
   );
 }
 
-// Toast Provider Component
+// Toast Provider Component with internal state management
 export interface ToastProviderProps {
   children: React.ReactNode;
-  toasts: ToastType[];
-  onRemove: (id: string) => void;
 }
 
-export function ToastProvider({ children, toasts, onRemove }: ToastProviderProps) {
+export function ToastProvider({ children }: ToastProviderProps) {
+  const toastManager = useToastHook();
+
   return (
-    <ToastPrimitive.Provider swipeDirection="right">
-      {children}
-      {toasts.map((toast) => (
-        <Toast key={toast.id} toast={toast} onRemove={onRemove} />
-      ))}
-      <ToastViewport />
-    </ToastPrimitive.Provider>
+    <ToastContext.Provider value={toastManager}>
+      <ToastPrimitive.Provider swipeDirection="right">
+        {children}
+        {toastManager.toasts.map((toast) => (
+          <Toast key={toast.id} toast={toast} onRemove={toastManager.removeToast} />
+        ))}
+        <ToastViewport />
+      </ToastPrimitive.Provider>
+    </ToastContext.Provider>
   );
+}
+
+// Hook to use toast functionality
+export function useToast() {
+  const context = useContext(ToastContext);
+  if (!context) {
+    throw new Error('useToast must be used within a ToastProvider');
+  }
+  return context;
 }
 
 // Export types and additional primitives
